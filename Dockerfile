@@ -4,5 +4,5 @@ RUN pip install -U pip && pip install flask
 
 WORKDIR /app
 
-CMD flask --app $FLASK_APP run
+CMD flask --app app run
 
