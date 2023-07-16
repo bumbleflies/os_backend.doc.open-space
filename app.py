@@ -1,7 +1,7 @@
 from pathlib import Path
 from uuid import uuid4
 
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 from flask_uuid import FlaskUUID
 
@@ -12,7 +12,7 @@ FlaskUUID(app)
 
 @app.route('/health')
 def health():
-    return 200
+    return jsonify(success=True)
 
 
 @app.route('/image-upload', methods=['POST'])
