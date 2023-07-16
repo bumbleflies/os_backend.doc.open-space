@@ -24,7 +24,7 @@ def upload_file():
         print(f'file [{filename}] exists, regenerating...')
         pass
     f.save(filename)
-    return filename
+    return filename.name
 
 
 @app.route('/i/<uuid:image_id>', methods=['GET'])
@@ -33,7 +33,7 @@ def get_image(image_id):
     if filename.exists():
         return send_file(filename, mimetype='image/jpeg')
     else:
-        return jsonify({'error': f'image [{image_id}] does not exists'})
+        return jsonify({'error': f'image [{image_id}] does not exists'}), 404
 
 
 if __name__ == '__main__':
