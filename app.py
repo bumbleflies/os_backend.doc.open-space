@@ -10,11 +10,16 @@ CORS(app)
 FlaskUUID(app)
 
 
+@app.route('/health')
+def health():
+    return 200
+
+
 @app.route('/image-upload', methods=['POST'])
 def upload_file():
     f = request.files['file']
     filename = str(uuid4())
-    f.save(Path('dl').joinpath( filename))
+    f.save(Path('dl').joinpath(filename))
     return filename
 
 
