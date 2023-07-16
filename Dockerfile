@@ -4,5 +4,4 @@ RUN pip install -U pip && pip install flask
 
 WORKDIR /app
 
-CMD flask --app app run
-
+CMD pip install -r requirements.txt
