@@ -21,6 +21,7 @@ if not os_storage.exists():
 origins = [
     "http://localhost:3000",
     "http://open-space-app.servyy.duckdns.org",
+    "https://open-space-app.servyy.duckdns.org",
 ]
 
 app.add_middleware(
