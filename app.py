@@ -7,13 +7,28 @@ import uuid as uuid
 import uvicorn as uvicorn
 from dacite import from_dict, Config
 from fastapi import FastAPI, status
+from fastapi.middleware.cors import CORSMiddleware
 
 from os import listdir
 
 app = FastAPI()
 
 os_storage = Path('os/')
-if not os_storage.exists(): os_storage.mkdir()
+if not os_storage.exists():
+    os_storage.mkdir()
+
+origins = [
+    "http://localhost:3000",
+    "http://open-space-app.servyy.duckdns.org",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class DateTimeEncoder(json.JSONEncoder):
