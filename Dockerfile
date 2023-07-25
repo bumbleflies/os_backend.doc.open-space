@@ -1,6 +1,6 @@
 FROM python:alpine
 
-RUN pip install -U pip && pip install flask
+RUN pip install -U pip
 
 WORKDIR /app
 
