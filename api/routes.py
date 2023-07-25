@@ -2,13 +2,34 @@ import json
 from dataclasses import asdict
 from datetime import datetime
 from os import listdir
+from pathlib import Path
 
+import fastapi
 from dacite import from_dict, Config
+from fastapi.middleware.cors import CORSMiddleware
 from starlette import status
 
 from api.encoder import DateTimeEncoder
 from api.model import OpenSpaceData, OpenSpacePersistent
-from app import app, os_storage
+
+app = fastapi.FastAPI()
+
+os_storage = Path('os/')
+if not os_storage.exists():
+    os_storage.mkdir()
+
+origins = [
+    "http://localhost:3000",
+    "http://open-space-app.servyy.duckdns.org",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get('/health')
