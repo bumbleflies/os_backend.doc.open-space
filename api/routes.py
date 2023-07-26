@@ -4,15 +4,15 @@ from datetime import datetime
 from os import listdir
 from pathlib import Path
 
-import fastapi
 from dacite import from_dict, Config
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from starlette import status
 
 from api.encoder import DateTimeEncoder
 from api.model import OpenSpaceData, OpenSpacePersistent
 
-app = fastapi.FastAPI()
+app = FastAPI()
 
 os_storage = Path('os/')
 if not os_storage.exists():
@@ -63,3 +63,17 @@ async def delete_open_space(identifier: str):
     os_path = os_storage.joinpath(identifier)
     if os_path.exists():
         os_path.unlink()
+
+
+@app.put('/os/{identifier}', status_code=status.HTTP_200_OK)
+def update_open_space(identifier: str, osd: OpenSpaceData, response: Response):
+    os_path = os_storage.joinpath(identifier)
+    os_persistent = OpenSpacePersistent.from_data(osd)
+    os_persistent.identifier = identifier
+    if os_path.exists():
+        with open(os_storage.joinpath(identifier), 'w') as os_file:
+            json.dump(asdict(os_persistent), os_file, cls=DateTimeEncoder)
+        return os_persistent
+    else:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {'message': 'Invalid OpenSpace Identifier'}
