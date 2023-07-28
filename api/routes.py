@@ -87,7 +87,7 @@ async def update_open_space(identifier: str, osd: TransientOpenSpaceData, respon
 @app.post('/os/{os_identifier}/images/', status_code=status.HTTP_201_CREATED)
 async def upload_os_images(os_identifier, image: UploadFile):
     persistent_image = PersistentImage(os_identifier)
-    with(image_storage.joinpath(persistent_image.identifier)) as image_file:
+    with (image_storage.joinpath(persistent_image.identifier)) as image_file:
         image_file.write_bytes(await image.read())
     return persistent_image
 

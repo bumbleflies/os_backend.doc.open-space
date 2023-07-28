@@ -84,4 +84,3 @@ class TestRestEndpoints(TestCase):
 
     def test_put_not_found(self):
         self.assertEqual(404, self.test_client.put('/os/456-not-existing-456', json=self.test_os).status_code)
-
