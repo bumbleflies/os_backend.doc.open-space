@@ -18,7 +18,7 @@ class TestRestEndpoints(TestCase):
         self.test_client = TestClient(app)
         for file in listdir(image_storage):
             image_storage.joinpath(file).unlink()
-        self.fixture_image = Path('fixtures').joinpath('test-image.png')
+        self.fixture_image = Path('tests').joinpath('fixtures/test-image.png')
 
     def test_create_os(self):
         with open(self.fixture_image, 'rb') as image_file:
