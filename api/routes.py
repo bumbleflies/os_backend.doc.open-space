@@ -16,13 +16,6 @@ from api.model.os_data import TransientOpenSpaceData, PersistentOpenSpaceData
 
 app = FastAPI()
 
-os_storage = Path('os/')
-image_storage = Path('img/')
-if not os_storage.exists():
-    os_storage.mkdir()
-if not image_storage.exists():
-    image_storage.mkdir()
-
 origins = [
     "http://localhost:3000",
     "http://open-space-app.servyy.duckdns.org",
@@ -36,6 +29,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+os_storage = Path('os/')
+image_storage = Path('img/')
+if not os_storage.exists():
+    os_storage.mkdir()
+if not image_storage.exists():
+    image_storage.mkdir()
 
 
 @app.get('/health')
