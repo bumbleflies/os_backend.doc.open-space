@@ -2,3 +2,4 @@ FastAPI
 uvicorn
 uuid
 dacite
+python-multipart
