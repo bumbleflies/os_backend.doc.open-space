@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
+from os import listdir
 from pathlib import Path
 from unittest import TestCase
 
 from fastapi.testclient import TestClient
 
 from api.model.id_gen import generatorFactoryInstance
-from api.routes import app, os_storage
-from os import listdir
+from api.route.os import os_storage
+from api.routes import app
 
 
 class TestRestEndpoints(TestCase):
