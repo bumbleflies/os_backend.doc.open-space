@@ -21,7 +21,11 @@ class ImageStore:
         return persistent_image
 
     def load(self, os_identifier: str) -> list[PersistentImage]:
-        return [PersistentImage(os_identifier, identifier=pi) for pi in listdir(self.storage.joinpath(os_identifier))]
+        os_image_path = self.storage.joinpath(os_identifier)
+        if os_image_path.exists():
+            return [PersistentImage(os_identifier, identifier=pi) for pi in listdir(os_image_path)]
+        else:
+            return []
 
     def get(self, persistent_image: PersistentImage):
         return self._image_storage.joinpath(persistent_image.os_identifier).joinpath(persistent_image.identifier)
