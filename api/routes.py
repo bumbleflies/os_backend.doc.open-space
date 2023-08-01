@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from api.route.image import image_router
+from api.route.os import os_router
+
 app = FastAPI()
 
 origins = [
@@ -17,9 +20,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(os_router)
+app.include_router(image_router)
+
 
 @app.get('/health')
 def health():
     return {'success': True}
-
-

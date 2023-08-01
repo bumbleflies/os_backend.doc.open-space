@@ -1,12 +1,11 @@
 from os import listdir
 from pathlib import Path
 
-from fastapi import UploadFile
+from fastapi import UploadFile, APIRouter
 from starlette import status
 from starlette.responses import Response, FileResponse
 
 from api.model.image_data import PersistentImage
-from api.routes import app
 
 
 class ImageStore:
@@ -36,18 +35,23 @@ class ImageStore:
 
 image_storage = ImageStore()
 
+image_router = APIRouter(
+    prefix='/os/{os_identifier}/i',
+    tags=['image']
+)
 
-@app.post('/os/{os_identifier}/images/', status_code=status.HTTP_201_CREATED)
+
+@image_router.post('/', status_code=status.HTTP_201_CREATED)
 async def upload_os_images(os_identifier, image: UploadFile) -> PersistentImage:
     return await image_storage.save(image, PersistentImage(os_identifier))
 
 
-@app.get('/os/{os_identifier}/images/')
+@image_router.get('/')
 async def get_os_images(os_identifier: str) -> list[PersistentImage]:
     return image_storage.load(os_identifier)
 
 
-@app.get('/os/{os_identifier}/images/{image_identifier}')
+@image_router.get('/{image_identifier}')
 async def get_os_image(os_identifier, image_identifier, response: Response):
     image_path = image_storage.get(PersistentImage(os_identifier, image_identifier))
     if image_path.exists():

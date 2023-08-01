@@ -5,19 +5,24 @@ from os import listdir
 from pathlib import Path
 
 from dacite import from_dict, Config
+from fastapi import APIRouter
 from starlette import status
 from starlette.responses import Response
 
 from api.encoder import DateTimeEncoder
 from api.model.os_data import TransientOpenSpaceData, PersistentOpenSpaceData
-from api.routes import app
 
 os_storage = Path('os/')
 if not os_storage.exists():
     os_storage.mkdir()
 
+os_router = APIRouter(
+    prefix='/os',
+    tags=['open space']
+)
 
-@app.post('/os/', status_code=status.HTTP_201_CREATED)
+
+@os_router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_os(osd: TransientOpenSpaceData) -> PersistentOpenSpaceData:
     os_persistent = PersistentOpenSpaceData.from_data(osd)
     with open(os_storage.joinpath(os_persistent.identifier), 'w') as os_file:
@@ -25,7 +30,7 @@ async def create_os(osd: TransientOpenSpaceData) -> PersistentOpenSpaceData:
     return os_persistent
 
 
-@app.get('/os/')
+@os_router.get('/')
 async def get_open_spaces() -> list[PersistentOpenSpaceData]:
     os_persistent = []
     for os_filename in listdir(os_storage):
@@ -37,14 +42,14 @@ async def get_open_spaces() -> list[PersistentOpenSpaceData]:
     return os_persistent
 
 
-@app.delete('/os/{identifier}', status_code=status.HTTP_204_NO_CONTENT)
+@os_router.delete('/{identifier}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_open_space(identifier: str):
     os_path = os_storage.joinpath(identifier)
     if os_path.exists():
         os_path.unlink()
 
 
-@app.put('/os/{identifier}')
+@os_router.put('/{identifier}')
 async def update_open_space(identifier: str, osd: TransientOpenSpaceData, response: Response):
     os_path = os_storage.joinpath(identifier)
     os_persistent = PersistentOpenSpaceData.from_data(osd)
