@@ -43,7 +43,7 @@ class TestRestEndpoints(TestCase):
             'start_date': self.start_date.isoformat(),
         }, response.json())
 
-    def test_get_os(self):
+    def test_get_all_os(self):
         self.test_client.post('/os', json=self.test_os)
 
         response = self.test_client.get('/os')
@@ -58,6 +58,23 @@ class TestRestEndpoints(TestCase):
             'location': {'lat': 1.0, 'lng': 2.0},
             'start_date': self.start_date.isoformat(),
         }, response.json()[0])
+
+    def test_get_os(self):
+        create_response = self.test_client.post('/os', json=self.test_os)
+        os_id = create_response.json()['identifier']
+        os_response = self.test_client.get(f'/os/{os_id}')
+        self.assertEqual(200, os_response.status_code)
+
+        self.assertDictEqual({
+            'title': 'test title',
+            'end_date': (self.start_date + timedelta(days=1)).isoformat(),
+            'identifier': '123',
+            'location': {'lat': 1.0, 'lng': 2.0},
+            'start_date': self.start_date.isoformat(),
+        }, os_response.json())
+
+    def test_get_not_found(self):
+        self.assertEqual(404, self.test_client.get('/os/456-not-existing-456').status_code)
 
     def test_delete_os(self):
         response = self.test_client.post('/os', json=self.test_os)
