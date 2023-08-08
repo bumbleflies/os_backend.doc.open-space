@@ -80,5 +80,9 @@ async def delete_image(os_identifier: str, image_identifier: str) -> None:
 
 @image_router.patch('/{image_identifier}', status_code=status.HTTP_204_NO_CONTENT)
 async def make_header_image(os_identifier: str, image_identifier: str, header_data: HeaderData):
+    if header_data.is_header:
+        # only allow one header
+        for os_image in image_registry.getByQuery({'os_identifier': os_identifier}):
+            image_registry.updateById(os_image.get('id'), {'is_header': False})
     image_registry.updateById(image_registry.get_image(PersistentImage(os_identifier, image_identifier)).get('id'),
-                              {'is_header': True})
+                              {'is_header': header_data.is_header})

@@ -81,3 +81,12 @@ class TestRestEndpoints(TestCase):
             'os_identifier': 'os-123',
             'is_header': True,
         }, response.json()[0], response.json())
+
+    def test_only_one_header_image(self):
+        self.provide_testfile(i_identifier='i-123')
+        self.provide_testfile(i_identifier='i-345')
+        self.assertEqual(204, self.test_client.patch('/os/os-123/i/i-123', json={'is_header': True}).status_code)
+        self.assertEqual(204, self.test_client.patch('/os/os-123/i/i-345', json={'is_header': True}).status_code)
+        response = self.test_client.get('/os/os-123/i/?only_header=True')
+        self.assertEqual(200, response.status_code, response.content)
+        self.assertEqual(1, len(response.json()), response.json())
