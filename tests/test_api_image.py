@@ -15,7 +15,7 @@ class TestRestEndpoints(TestCase):
     def provide_testfile(self, os_identifier='os-123', i_identifier='i-123'):
         imagepath = image_storage.storage.joinpath(os_identifier)
         imagepath.mkdir(parents=True)
-        copyfile(self.fixture_image, imagepath.joinpath(i_identifier))
+        return copyfile(self.fixture_image, imagepath.joinpath(i_identifier))
 
     def setUp(self) -> None:
         super().setUp()
@@ -47,3 +47,9 @@ class TestRestEndpoints(TestCase):
             'identifier': 'i-123',
             'os_identifier': 'os-123'
         }, response.json()[0], response.json())
+
+    def test_delete_os_image(self):
+        testfile = self.provide_testfile()
+        self.assertTrue(testfile.exists())
+        self.test_client.delete('/os/os-123/i/i-123')
+        self.assertFalse(testfile.exists())

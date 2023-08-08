@@ -28,7 +28,11 @@ class ImageStore:
             return []
 
     def get(self, persistent_image: PersistentImage):
-        return self._image_storage.joinpath(persistent_image.os_identifier).joinpath(persistent_image.identifier)
+        return self.storage.joinpath(persistent_image.os_identifier).joinpath(persistent_image.identifier)
+
+    def delete(self, persistent_image: PersistentImage):
+        if self.get(persistent_image).exists():
+            self.get(persistent_image).unlink()
 
     @property
     def storage(self):
@@ -63,3 +67,8 @@ async def get_os_image(os_identifier, image_identifier, response: Response):
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {'message': 'Invalid Image Identifier'}
+
+
+@image_router.delete('/{image_identifier}', status_code=status.HTTP_204_NO_CONTENT)
+async def delete_image(os_identifier, image_identifier):
+    image_storage.delete(PersistentImage(os_identifier, image_identifier))
