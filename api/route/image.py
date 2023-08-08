@@ -6,6 +6,7 @@ from starlette import status
 from starlette.responses import Response, FileResponse
 
 from api.model.image_data import PersistentImage
+from api.store.image import image_registry
 
 
 class ImageStore:
@@ -51,19 +52,21 @@ image_router = APIRouter(
 
 @image_router.post('/', status_code=status.HTTP_201_CREATED)
 async def upload_os_images(os_identifier, image: UploadFile) -> PersistentImage:
-    return await image_storage.save(image, PersistentImage(os_identifier))
+    persistent_image = PersistentImage(os_identifier)
+    image_registry.add_image(persistent_image)
+    return await image_storage.save(image, persistent_image)
 
 
 @image_router.get('/')
 async def get_os_images(os_identifier: str) -> list[PersistentImage]:
-    return image_storage.load(os_identifier)
+    return image_registry.get_for_os(os_identifier)
 
 
 @image_router.get('/{image_identifier}')
 async def get_os_image(os_identifier, image_identifier, response: Response):
-    image_path = image_storage.get(PersistentImage(os_identifier, image_identifier))
-    if image_path.exists():
-        return FileResponse(image_path)
+    persistent_image = PersistentImage(os_identifier, image_identifier)
+    if image_registry.has_image(persistent_image):
+        return FileResponse(image_storage.get(persistent_image))
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {'message': 'Invalid Image Identifier'}
@@ -71,4 +74,5 @@ async def get_os_image(os_identifier, image_identifier, response: Response):
 
 @image_router.delete('/{image_identifier}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_image(os_identifier, image_identifier):
+    image_registry.delete_by_identifier(image_identifier)
     image_storage.delete(PersistentImage(os_identifier, image_identifier))
