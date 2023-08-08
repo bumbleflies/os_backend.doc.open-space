@@ -3,3 +3,4 @@ uvicorn
 uuid
 dacite
 python-multipart
+pysondb

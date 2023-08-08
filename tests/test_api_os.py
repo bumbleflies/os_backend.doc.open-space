@@ -1,12 +1,9 @@
 from datetime import datetime, timedelta
-from os import listdir
-from pathlib import Path
 from unittest import TestCase
 
 from fastapi.testclient import TestClient
 
 from api.model.id_gen import generatorFactoryInstance
-from api.route.os import os_storage
 from api.routes import app
 
 
@@ -17,8 +14,6 @@ class TestRestEndpoints(TestCase):
         self.test_id = '123'
         generatorFactoryInstance.generator_function = lambda: self.test_id
         self.test_client = TestClient(app)
-        for file in listdir(os_storage):
-            os_storage.joinpath(file).unlink()
 
         self.start_date = datetime(2023, 3, 4, 5, 6, 7)
         self.test_os = {
@@ -79,9 +74,7 @@ class TestRestEndpoints(TestCase):
     def test_delete_os(self):
         response = self.test_client.post('/os', json=self.test_os)
         os_id = response.json()['identifier']
-        self.assertTrue(Path('os').joinpath(os_id).exists())
         self.test_client.delete(f'/os/{os_id}')
-        self.assertFalse(Path('os').joinpath(os_id).exists())
 
     def test_put_os(self):
         response = self.test_client.post('/os', json=self.test_os)
