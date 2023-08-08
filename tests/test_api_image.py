@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 
 from api.model.id_gen import generatorFactoryInstance
 from api.routes import app
+from api.store.image import image_registry
 
 
 class TestRestEndpoints(TestCase):
@@ -21,6 +22,7 @@ class TestRestEndpoints(TestCase):
 
     def setUp(self) -> None:
         super().setUp()
+        image_registry.deleteAll()
         self.test_id = '123'
         generatorFactoryInstance.generator_function = lambda: self.get_test_id()
         self.test_client = TestClient(app)
@@ -63,6 +65,19 @@ class TestRestEndpoints(TestCase):
         self.assertEqual(200, response.status_code, response.content)
         self.assertDictEqual({
             'identifier': 'i-123',
+            'os_identifier': 'os-123',
+            'is_header': True,
+        }, response.json()[0], response.json())
+
+    def test_get_header_image(self):
+        self.provide_testfile()
+        self.provide_testfile(i_identifier='i-345')
+        patch_response = self.test_client.patch('/os/os-123/i/i-345', json={'is_header': True})
+        self.assertEqual(204, patch_response.status_code, patch_response.content)
+        response = self.test_client.get('/os/os-123/i/?only_header=True')
+        self.assertEqual(200, response.status_code, response.content)
+        self.assertDictEqual({
+            'identifier': 'i-345',
             'os_identifier': 'os-123',
             'is_header': True,
         }, response.json()[0], response.json())

@@ -5,12 +5,14 @@ from fastapi.testclient import TestClient
 
 from api.model.id_gen import generatorFactoryInstance
 from api.routes import app
+from api.store.os import os_registry
 
 
 class TestRestEndpoints(TestCase):
 
     def setUp(self) -> None:
         super().setUp()
+        os_registry.deleteAll()
         self.test_id = '123'
         generatorFactoryInstance.generator_function = lambda: self.test_id
         self.test_client = TestClient(app)

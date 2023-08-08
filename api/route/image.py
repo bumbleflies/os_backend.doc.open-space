@@ -58,8 +58,8 @@ async def upload_os_images(os_identifier, image: UploadFile) -> PersistentImage:
 
 
 @image_router.get('/')
-async def get_os_images(os_identifier: str) -> list[PersistentImage]:
-    return image_registry.get_for_os(os_identifier)
+async def get_os_images(os_identifier: str, only_header: bool = False) -> list[PersistentImage]:
+    return list(filter(lambda i: not only_header or i.is_header, image_registry.get_for_os(os_identifier)))
 
 
 @image_router.get('/{image_identifier}')

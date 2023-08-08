@@ -6,7 +6,9 @@ from pathlib import Path
 from typing import Callable, Any
 
 from dacite import from_dict, Config
+from more_itertools import one
 from pysondb.db import JsonDatabase
+from pysondb.errors import DataNotFoundError
 
 from api.encoder import DateTimeEncoder
 from api.model.os_data import PersistentOpenSpaceData
@@ -38,7 +40,10 @@ class OpenSpaceJsonDatabase(JsonDatabase):
             self.deleteById(existing_data.get('id'))
 
     def update_by_identifier(self, identifier: str, new_os: PersistentOpenSpaceData) -> PersistentOpenSpaceData:
-        self.updateByQuery({'identifier': identifier}, asdict(new_os))
+        found_images = self.getByQuery({'identifier': identifier})
+        if 1 != len(found_images):
+            raise DataNotFoundError({'identifier': identifier})
+        self.updateById(one(found_images).get('id'), asdict(new_os))
         return new_os
 
 
