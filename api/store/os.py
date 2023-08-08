@@ -2,6 +2,7 @@ import json
 from dataclasses import asdict
 from datetime import datetime
 from functools import partial
+from pathlib import Path
 from typing import Callable, Any
 
 from dacite import from_dict, Config
@@ -20,7 +21,9 @@ def dict_to_os_data(os):
 class OpenSpaceJsonDatabase(JsonDatabase):
 
     def __init__(self) -> None:
-        super().__init__('os/registry.json', 'id')
+        self.file_store = Path('os/')
+        self.file_store.mkdir(exist_ok=True)
+        super().__init__(str(self.file_store.joinpath('registry.json')), 'id')
 
     def _get_dump_function(self) -> Callable[..., Any]:
         return partial(json.dump, cls=DateTimeEncoder)

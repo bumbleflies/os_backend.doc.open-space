@@ -52,4 +52,17 @@ class TestRestEndpoints(TestCase):
 
     def test_delete_os_image(self):
         self.provide_testfile()
-        self.test_client.delete('/os/os-123/i/i-123')
+        response = self.test_client.delete('/os/os-123/i/i-123')
+        self.assertEqual(204, response.status_code)
+
+    def test_make_header(self):
+        self.provide_testfile()
+        patch_response = self.test_client.patch('/os/os-123/i/i-123', json={'is_header': True})
+        self.assertEqual(204, patch_response.status_code, patch_response.content)
+        response = self.test_client.get('/os/os-123/i/')
+        self.assertEqual(200, response.status_code, response.content)
+        self.assertDictEqual({
+            'identifier': 'i-123',
+            'os_identifier': 'os-123',
+            'is_header': True,
+        }, response.json()[0], response.json())

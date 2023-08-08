@@ -5,7 +5,7 @@ from fastapi import UploadFile, APIRouter
 from starlette import status
 from starlette.responses import Response, FileResponse
 
-from api.model.image_data import PersistentImage
+from api.model.image_data import PersistentImage, HeaderData
 from api.store.image import image_registry
 
 
@@ -63,7 +63,7 @@ async def get_os_images(os_identifier: str) -> list[PersistentImage]:
 
 
 @image_router.get('/{image_identifier}')
-async def get_os_image(os_identifier, image_identifier, response: Response):
+async def get_os_image(os_identifier: str, image_identifier: str, response: Response):
     persistent_image = PersistentImage(os_identifier, image_identifier)
     if image_registry.has_image(persistent_image):
         return FileResponse(image_storage.get(persistent_image))
@@ -73,6 +73,12 @@ async def get_os_image(os_identifier, image_identifier, response: Response):
 
 
 @image_router.delete('/{image_identifier}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_image(os_identifier, image_identifier):
+async def delete_image(os_identifier: str, image_identifier: str) -> None:
     image_registry.delete_by_identifier(image_identifier)
     image_storage.delete(PersistentImage(os_identifier, image_identifier))
+
+
+@image_router.patch('/{image_identifier}', status_code=status.HTTP_204_NO_CONTENT)
+async def make_header_image(os_identifier: str, image_identifier: str, header_data: HeaderData):
+    image_registry.updateById(image_registry.get_image(PersistentImage(os_identifier, image_identifier)).get('id'),
+                              {'is_header': True})
