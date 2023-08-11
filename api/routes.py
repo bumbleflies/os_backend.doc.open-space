@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.route.image import image_router
+from api.route.image_details import image_details_router
 from api.route.os import os_router
 
 app = FastAPI()
@@ -22,6 +23,7 @@ app.add_middleware(
 
 app.include_router(os_router)
 app.include_router(image_router)
+app.include_router(image_details_router)
 
 
 @app.get('/health')

@@ -11,5 +11,15 @@ class PersistentImage:
 
 
 @dataclass
+class Details:
+    description: str
+
+
+@dataclass
+class ImageDetails(Details):
+    image_identifier: str
+
+
+@dataclass
 class HeaderData:
     is_header: bool

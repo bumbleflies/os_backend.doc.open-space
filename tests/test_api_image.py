@@ -4,8 +4,8 @@ from unittest import TestCase
 from fastapi.testclient import TestClient
 
 from api.model.id_gen import generatorFactoryInstance
+from api.registry.image import image_registry
 from api.routes import app
-from api.store.image import image_registry
 
 
 class TestRestEndpoints(TestCase):
