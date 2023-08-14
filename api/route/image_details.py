@@ -28,3 +28,8 @@ async def get_image_details(os_identifier: str, image_identifier: str, response:
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {'message': 'Invalid Image Identifier'}
+
+
+@image_details_router.delete('/details', status_code=status.HTTP_204_NO_CONTENT)
+async def delete_image_details(image_identifier: str):
+    image_details_registry.delete_by_image_identifier(image_identifier)

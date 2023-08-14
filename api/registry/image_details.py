@@ -27,5 +27,10 @@ class ImageDetailsJsonDatabase(JsonDatabase):
     def get_by_image_identifier(self, image_identifier: str) -> ImageDetails:
         return from_dict(data_class=ImageDetails, data=one(self.getByQuery({'image_identifier': image_identifier})))
 
+    def delete_by_image_identifier(self, image_identifier: str) -> None:
+        found_image = self.getByQuery({'image_identifier': image_identifier})
+        if len(found_image) == 1:
+            self.deleteById(one(found_image).get(self.id_fieldname))
+
 
 image_details_registry = ImageDetailsJsonDatabase()
