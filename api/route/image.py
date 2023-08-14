@@ -48,4 +48,3 @@ async def make_header_image(os_identifier: str, image_identifier: str, header_da
             image_registry.updateById(os_image.get('id'), {'is_header': False})
     image_registry.updateById(image_registry.get_image(PersistentImage(os_identifier, image_identifier)).get('id'),
                               {'is_header': header_data.is_header})
-
