@@ -11,7 +11,7 @@ class ImageStore:
         self._image_storage = Path('img/')
 
     async def save(self, image: UploadFile, persistent_image: PersistentImage):
-        os_path = self.storage.joinpath(persistent_image.os_identifier)
+        os_path = self.image_dir(persistent_image)
         if not os_path.exists():
             os_path.mkdir()
         with os_path.joinpath(persistent_image.identifier) as image_file:
@@ -19,24 +19,29 @@ class ImageStore:
         return persistent_image
 
     def load(self, os_identifier: str) -> list[PersistentImage]:
-        os_image_path = self.storage.joinpath(os_identifier)
+        os_image_path = self.storage_path.joinpath(os_identifier)
         if os_image_path.exists():
             return [PersistentImage(os_identifier, identifier=pi) for pi in listdir(os_image_path)]
         else:
             return []
 
     def get(self, persistent_image: PersistentImage):
-        return self.storage.joinpath(persistent_image.os_identifier).joinpath(persistent_image.identifier)
+        return self.image_dir(persistent_image).joinpath(persistent_image.identifier)
 
     def delete(self, persistent_image: PersistentImage):
         if self.get(persistent_image).exists():
             self.get(persistent_image).unlink()
+            if len(listdir(self.image_dir(persistent_image))) == 0:
+                self.image_dir(persistent_image).rmdir()
 
     @property
-    def storage(self):
+    def storage_path(self):
         if not self._image_storage.exists():
             self._image_storage.mkdir()
         return self._image_storage
+
+    def image_dir(self, persistent_image: PersistentImage):
+        return self.storage_path.joinpath(persistent_image.os_identifier)
 
 
 image_storage = ImageStore()

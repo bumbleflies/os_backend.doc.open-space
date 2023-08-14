@@ -1,3 +1,4 @@
+from os import listdir
 from pathlib import Path
 from unittest import TestCase
 
@@ -90,3 +91,21 @@ class TestRestEndpoints(TestCase):
         response = self.test_client.get('/os/os-123/i/?only_header=True')
         self.assertEqual(200, response.status_code, response.content)
         self.assertEqual(1, len(response.json()), response.json())
+
+    def test_image_dir_is_deleted_when_empty(self):
+        with open(self.fixture_image, 'rb') as image_file:
+            response1 = self.test_client.post('/os/123/i/', files={'image': image_file})
+            self.test_id = '345'
+            response2 = self.test_client.post('/os/123/i/', files={'image': image_file})
+            self.assertEqual(201, response1.status_code, response1.content)
+            self.assertEqual(201, response2.status_code, response2.content)
+
+        response = self.test_client.get('/os/123/i/')
+        self.assertEqual(200, response.status_code, response.content)
+        self.assertEqual(2, len(response.json()), response.json())
+        self.assertEqual(2, len(listdir(Path('img').joinpath('123'))))
+        response_del1 = self.test_client.delete('/os/123/i/123')
+        self.assertEqual(204, response_del1.status_code)
+        response_del2 = self.test_client.delete('/os/123/i/345')
+        self.assertEqual(204, response_del2.status_code)
+        self.assertFalse(Path('img').joinpath('123').exists())
