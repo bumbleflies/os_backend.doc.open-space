@@ -4,6 +4,7 @@ from starlette.responses import Response, FileResponse
 
 from api.model.image_data import PersistentImage, HeaderData
 from api.registry.image import image_registry
+from api.route.image_details import delete_image_details
 from api.store.image import image_storage
 
 image_router = APIRouter(
@@ -38,6 +39,7 @@ async def get_os_image(os_identifier: str, image_identifier: str, response: Resp
 async def delete_image(os_identifier: str, image_identifier: str) -> None:
     image_registry.delete_by_identifier(image_identifier)
     image_storage.delete(PersistentImage(os_identifier, image_identifier))
+    await delete_image_details(image_identifier)
 
 
 @image_router.patch('/{image_identifier}', status_code=status.HTTP_204_NO_CONTENT)

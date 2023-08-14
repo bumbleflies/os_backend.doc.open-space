@@ -27,7 +27,7 @@ class ImageJsonDatabase(JsonDatabase):
 
     def delete_by_identifier(self, identifier: str):
         for existing_data in self.getByQuery({'identifier': identifier}):
-            self.deleteById(existing_data.get('id'))
+            self.deleteById(existing_data.get(self.id_fieldname))
 
     def get_for_os(self, os_identifier: str) -> list[PersistentImage]:
         return list(map(dict_to_image_data, self.getByQuery({'os_identifier': os_identifier})))
