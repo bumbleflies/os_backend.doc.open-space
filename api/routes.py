@@ -8,8 +8,6 @@ from api.route.os import os_router
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000",
-    "http://localhost:38863",
     "http://open-space-app.servyy.duckdns.org",
     "https://open-space-app.servyy.duckdns.org",
 ]
@@ -17,6 +15,7 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex='^http://localhost:[0-9]*',
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
