@@ -9,6 +9,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
+    "http://localhost:38863",
     "http://open-space-app.servyy.duckdns.org",
     "https://open-space-app.servyy.duckdns.org",
 ]
