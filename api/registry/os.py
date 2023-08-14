@@ -37,13 +37,13 @@ class OpenSpaceJsonDatabase(JsonDatabase):
 
     def delete_by_identifier(self, identifier: str) -> None:
         for existing_data in self.getByQuery({'identifier': identifier}):
-            self.deleteById(existing_data.get('id'))
+            self.deleteById(existing_data.get(self.id_fieldname))
 
     def update_by_identifier(self, identifier: str, new_os: PersistentOpenSpaceData) -> PersistentOpenSpaceData:
         found_images = self.getByQuery({'identifier': identifier})
         if 1 != len(found_images):
             raise DataNotFoundError({'identifier': identifier})
-        self.updateById(one(found_images).get('id'), asdict(new_os))
+        self.updateById(one(found_images).get(self.id_fieldname), asdict(new_os))
         return new_os
 
 

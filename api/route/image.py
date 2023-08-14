@@ -47,6 +47,7 @@ async def make_header_image(os_identifier: str, image_identifier: str, header_da
     if header_data.is_header:
         # only allow one header
         for os_image in image_registry.getByQuery({'os_identifier': os_identifier}):
-            image_registry.updateById(os_image.get('id'), {'is_header': False})
-    image_registry.updateById(image_registry.get_image(PersistentImage(os_identifier, image_identifier)).get('id'),
-                              {'is_header': header_data.is_header})
+            image_registry.updateById(os_image.get(image_registry.id_fieldname), {'is_header': False})
+    image_registry.updateById(
+        image_registry.get_image(PersistentImage(os_identifier, image_identifier)).get(image_registry.id_fieldname),
+        {'is_header': header_data.is_header})
