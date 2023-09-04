@@ -41,3 +41,8 @@ async def get_session(os_identifier: str, session_identifier: str, response: Res
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return ErrorMessage('Invalid OpenSpace Identifier')
+
+
+@session_router.delete('/{session_identifier}', status_code=status.HTTP_204_NO_CONTENT)
+async def delete_session(os_identifier: str, session_identifier: str) -> None:
+    return session_registry.delete_by_identifier(session_identifier)
