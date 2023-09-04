@@ -26,7 +26,7 @@ async def get_open_spaces() -> list[PersistentOpenSpaceData]:
 
 
 @os_router.get('/{identifier}')
-def get_open_space(identifier, response: Response) ->PersistentOpenSpaceData|ErrorMessage:
+def get_open_space(identifier, response: Response) -> PersistentOpenSpaceData | ErrorMessage:
     query_result = os_registry.getByQuery({'identifier': identifier})
     if 1 == len(query_result):
         return dict_to_os_data(one(query_result))
@@ -41,7 +41,8 @@ async def delete_open_space(identifier: str):
 
 
 @os_router.put('/{identifier}')
-async def update_open_space(identifier: str, osd: TransientOpenSpaceData, response: Response)->PersistentOpenSpaceData|ErrorMessage:
+async def update_open_space(identifier: str, osd: TransientOpenSpaceData,
+                            response: Response) -> PersistentOpenSpaceData | ErrorMessage:
     os_persistent = PersistentOpenSpaceData.from_data(osd)
     os_persistent.identifier = identifier
     try:

@@ -1,5 +1,3 @@
-from typing import Any
-
 from fastapi import UploadFile, APIRouter
 from starlette import status
 from starlette.responses import Response, FileResponse

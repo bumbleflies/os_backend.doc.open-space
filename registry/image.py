@@ -12,6 +12,7 @@ from api.model.image_data import PersistentImage
 def dict_to_image_data(img):
     return from_dict(data_class=PersistentImage, data=img)
 
+
 class ImageJsonDatabase(JsonDatabase):
 
     def __init__(self) -> None:

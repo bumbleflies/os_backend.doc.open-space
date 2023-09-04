@@ -40,7 +40,7 @@ class TestImageDetailsApi(TestCase):
         }, response.json(), response.json())
 
         put_response = self.test_client.put('/os/os-123/i/i-123/details',
-                                              json={'description': 'other-test-description'})
+                                            json={'description': 'other-test-description'})
         self.assertEqual(200, put_response.status_code, put_response.content)
         response = self.test_client.get('/os/os-123/i/i-123/details')
         self.assertEqual(200, response.status_code, response.content)
