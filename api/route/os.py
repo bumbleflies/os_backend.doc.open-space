@@ -4,7 +4,7 @@ from starlette import status
 from starlette.responses import Response
 
 from api.model.os_data import TransientOpenSpaceData, PersistentOpenSpaceData
-from api.registry.os import dict_to_os_data, os_registry
+from registry.os import os_registry, dict_to_os_data
 
 os_router = APIRouter(
     prefix='/os',

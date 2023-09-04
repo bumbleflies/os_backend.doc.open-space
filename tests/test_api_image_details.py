@@ -3,8 +3,8 @@ from unittest import TestCase
 
 from fastapi.testclient import TestClient
 
-from api.registry.image_details import image_details_registry
 from api.routes import app
+from registry import image_details_registry
 
 
 class TestImageDetailsApi(TestCase):

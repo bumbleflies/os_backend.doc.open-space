@@ -8,7 +8,7 @@ from api.model.image_data import PersistentImage
 
 class ImageStore:
     def __init__(self, path='img'):
-        self._image_storage = Path('img/')
+        self._image_storage = Path(path)
 
     async def save(self, image: UploadFile, persistent_image: PersistentImage):
         os_path = self.image_dir(persistent_image)

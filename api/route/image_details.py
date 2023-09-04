@@ -3,7 +3,7 @@ from starlette import status
 from starlette.responses import Response
 
 from api.model.image_data import Details, ImageDetails
-from api.registry.image_details import image_details_registry
+from registry.image_details import image_details_registry
 
 image_details_router = APIRouter(
     prefix='/os/{os_identifier}/i/{image_identifier}',

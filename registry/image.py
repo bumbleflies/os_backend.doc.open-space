@@ -16,7 +16,7 @@ def dict_to_image_data(img):
 class ImageJsonDatabase(JsonDatabase):
 
     def __init__(self) -> None:
-        self.file_store = Path('img/')
+        self.file_store = Path('../../map_front/public/img/')
         self.file_store.mkdir(exist_ok=True)
         super().__init__(str(self.file_store.joinpath('registry.json')), 'id')
 

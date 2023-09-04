@@ -3,9 +3,9 @@ from starlette import status
 from starlette.responses import Response, FileResponse
 
 from api.model.image_data import PersistentImage, HeaderData
-from api.registry.image import image_registry
 from api.route.image_details import delete_image_details
-from api.store.image import image_storage
+from registry.image import image_registry
+from store.image import image_storage
 
 image_router = APIRouter(
     prefix='/os/{os_identifier}/i',
