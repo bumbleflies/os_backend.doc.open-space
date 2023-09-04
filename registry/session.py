@@ -21,8 +21,13 @@ class OpenSpaceSessionJsonDatabase(JsonDatabase):
         return partial(json.dump, cls=DateTimeEncoder)
 
     def add_session(self, session: SessionData):
+        self.delete_by_identifier(session.identifier)
         self.add(asdict(session))
         return session
+
+    def delete_by_identifier(self, identifier: str) -> None:
+        for existing_data in self.getByQuery({'identifier': identifier}):
+            self.deleteById(existing_data.get(self.id_fieldname))
 
 
 session_registry = OpenSpaceSessionJsonDatabase()
