@@ -39,9 +39,9 @@ class TestImageDetailsApi(TestCase):
             'image_identifier': 'i-123'
         }, response.json(), response.json())
 
-        patch_response = self.test_client.put('/os/os-123/i/i-123/details',
+        put_response = self.test_client.put('/os/os-123/i/i-123/details',
                                               json={'description': 'other-test-description'})
-        self.assertEqual(200, patch_response.status_code, patch_response.content)
+        self.assertEqual(200, put_response.status_code, put_response.content)
         response = self.test_client.get('/os/os-123/i/i-123/details')
         self.assertEqual(200, response.status_code, response.content)
         self.assertDictEqual({

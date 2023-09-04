@@ -24,7 +24,7 @@ class ImageDetailsJsonDatabase(JsonDatabase):
     def has_image_details(self, image_identifier: str) -> bool:
         return len(self.getByQuery({'image_identifier': image_identifier})) > 0
 
-    def get_by_image_identifier(self, image_identifier: str) -> ImageDetails:
+    def get_by_image_details(self, image_identifier: str) -> ImageDetails:
         return from_dict(data_class=ImageDetails, data=one(self.getByQuery({'image_identifier': image_identifier})))
 
     def delete_by_image_identifier(self, image_identifier: str) -> None:

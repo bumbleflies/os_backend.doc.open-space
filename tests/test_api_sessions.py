@@ -36,3 +36,24 @@ class TestSessionApi(TestCase):
         response = self.test_client.get('/os/123/s/')
         self.assertEqual(200, response.status_code, response.content)
         self.assertEqual(1, len(response.json()))
+
+    def test_edit_os_sessions(self):
+        create_response = self.test_client.post('/os/123/s/', json=self.test_session)
+
+        self.assertEqual(201, create_response.status_code, create_response.content)
+        self.assertDictEqual({**self.test_session,
+                              'identifier': '345',
+                              'os_identifier': '123'}, create_response.json())
+
+        put_response = self.test_client.put('/os/123/s/345', json={
+            'title': 'New Title',
+            'start_date': (self.start_date + timedelta(hours=2)).isoformat(),
+            'end_date': (self.start_date + timedelta(hours=4)).isoformat()
+        })
+
+        self.assertEqual(200, put_response.status_code, put_response.content)
+        self.assertDictEqual({'title': 'New Title',
+                              'start_date': (self.start_date + timedelta(hours=2)).isoformat(),
+                              'end_date': (self.start_date + timedelta(hours=4)).isoformat(),
+                              'identifier': '345',
+                              'os_identifier': '123'}, put_response.json())

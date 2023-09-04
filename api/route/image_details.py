@@ -24,7 +24,7 @@ async def add_image_details(os_identifier: str, image_identifier: str, details: 
 @image_details_router.get('/details')
 async def get_image_details(os_identifier: str, image_identifier: str, response: Response):
     if image_details_registry.has_image_details(image_identifier):
-        return image_details_registry.get_by_image_identifier(image_identifier)
+        return image_details_registry.get_by_image_details(image_identifier)
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {'message': 'Invalid Image Identifier'}
