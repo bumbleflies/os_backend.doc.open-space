@@ -8,7 +8,7 @@ from api.registry.os import os_registry
 from api.routes import app
 
 
-class TestRestEndpoints(TestCase):
+class TestOsApi(TestCase):
 
     def setUp(self) -> None:
         super().setUp()

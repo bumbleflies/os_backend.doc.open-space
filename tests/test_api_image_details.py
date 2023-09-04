@@ -7,7 +7,7 @@ from api.registry.image_details import image_details_registry
 from api.routes import app
 
 
-class TestRestEndpoints(TestCase):
+class TestImageDetailsApi(TestCase):
 
     def setUp(self) -> None:
         super().setUp()

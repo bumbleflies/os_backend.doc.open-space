@@ -9,7 +9,7 @@ from api.registry.image import image_registry
 from api.routes import app
 
 
-class TestRestEndpoints(TestCase):
+class TestImageApi(TestCase):
 
     def provide_testfile(self, os_identifier='os-123', i_identifier='i-123'):
         self.test_id = i_identifier
