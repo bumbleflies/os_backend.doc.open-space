@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from more_itertools import one
 from pysondb.errors import DataNotFoundError
 from starlette import status
 from starlette.responses import Response
@@ -20,14 +21,14 @@ async def create_os(osd: TransientOpenSpaceData) -> PersistentOpenSpaceData:
 
 @os_router.get('/')
 async def get_open_spaces() -> list[PersistentOpenSpaceData]:
-    return list(map(dict_to_os_data, os_registry.getAll()))
+    return os_registry.get_all_os()
 
 
 @os_router.get('/{identifier}')
 def get_open_space(identifier, response: Response):
     query_result = os_registry.getByQuery({'identifier': identifier})
     if 1 == len(query_result):
-        return dict_to_os_data(query_result[0])
+        return dict_to_os_data(one(query_result))
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {'message': 'Invalid OpenSpace Identifier'}

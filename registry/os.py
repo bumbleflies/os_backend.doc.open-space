@@ -3,7 +3,7 @@ from dataclasses import asdict
 from datetime import datetime
 from functools import partial
 from pathlib import Path
-from typing import Callable, Any
+from typing import Callable, Any, Mapping
 
 from dacite import from_dict, Config
 from more_itertools import one
@@ -14,7 +14,7 @@ from api.encoder import DateTimeEncoder
 from api.model.os_data import PersistentOpenSpaceData
 
 
-def dict_to_os_data(os):
+def dict_to_os_data(os: Mapping[str, Any]):
     return from_dict(data_class=PersistentOpenSpaceData, data=os, config=Config(type_hooks={
         datetime: datetime.fromisoformat
     }))
@@ -34,6 +34,9 @@ class OpenSpaceJsonDatabase(JsonDatabase):
         self.delete_by_identifier(os.identifier)
         self.add(asdict(os))
         return os
+
+    def get_all_os(self) -> list[PersistentOpenSpaceData]:
+        return list(map(dict_to_os_data, self.getAll()))
 
     def delete_by_identifier(self, identifier: str) -> None:
         for existing_data in self.getByQuery({'identifier': identifier}):
