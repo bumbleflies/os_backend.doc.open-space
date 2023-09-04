@@ -1,9 +1,8 @@
-from dataclasses import asdict
-
 from fastapi import APIRouter
-from more_itertools import one
 from starlette import status
+from starlette.responses import Response
 
+from api.model.error import ErrorMessage
 from api.model.session_data import SessionData, TransientSessionData
 from registry.session import session_registry
 
@@ -21,11 +20,24 @@ async def add_session(os_identifier: str, session: TransientSessionData) -> Sess
 
 
 @session_router.get('/')
-async def get_sessions(os_identifier: str)->list[SessionData]:
+async def get_sessions(os_identifier: str) -> list[SessionData]:
     return session_registry.get_all_sessions(os_identifier)
 
 
 @session_router.put('/{session_identifier}')
-async def update_session(os_identifier: str, session_identifier: str, session: TransientSessionData) -> SessionData:
-    if session_registry.has_session(os_identifier,session_identifier):
-        return session_registry.update_session(os_identifier,session_identifier,session)
+async def update_session(os_identifier: str, session_identifier: str, session: TransientSessionData,
+                         response: Response) -> SessionData | ErrorMessage:
+    if session_registry.has_session(os_identifier, session_identifier):
+        return session_registry.update_session(os_identifier, session_identifier, session)
+    else:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return ErrorMessage('Invalid OpenSpace Identifier')
+
+
+@session_router.get('/{session_identifier}')
+async def get_session(os_identifier: str, session_identifier: str, response: Response) -> SessionData | ErrorMessage:
+    if session_registry.has_session(os_identifier, session_identifier):
+        return session_registry.get_session(os_identifier, session_identifier)
+    else:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return ErrorMessage('Invalid OpenSpace Identifier')

@@ -44,13 +44,17 @@ class OpenSpaceSessionJsonDatabase(JsonDatabase):
     def has_session(self, os_identifier: str, session_identifier: str) -> bool:
         return len(self._find_session(os_identifier, session_identifier)) > 0
 
-    def update_session(self, os_identifier: str, session_identifier: str, session: TransientSessionData)->SessionData:
+    def get_session(self, os_identifier: str, session_identifier: str) -> SessionData:
+        return one(self._find_session(os_identifier, session_identifier))
+
+    def update_session(self, os_identifier: str, session_identifier: str, session: TransientSessionData) -> SessionData:
         self.updateByQuery({'os_identifier': os_identifier, 'identifier': session_identifier},
                            asdict(session))
         return one(self._find_session(os_identifier, session_identifier))
 
-    def _find_session(self, os_identifier: str, session_identifier: str)->list[SessionData]:
-        return list(map(dict_to_session, self.getByQuery({'os_identifier': os_identifier, 'identifier': session_identifier})))
+    def _find_session(self, os_identifier: str, session_identifier: str) -> list[SessionData]:
+        return list(
+            map(dict_to_session, self.getByQuery({'os_identifier': os_identifier, 'identifier': session_identifier})))
 
 
 session_registry: OpenSpaceSessionJsonDatabase = OpenSpaceSessionJsonDatabase()

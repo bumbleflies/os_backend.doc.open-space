@@ -1,7 +1,10 @@
+from typing import Any
+
 from fastapi import UploadFile, APIRouter
 from starlette import status
 from starlette.responses import Response, FileResponse
 
+from api.model.error import ErrorMessage
 from api.model.image_data import PersistentImage, HeaderData
 from api.route.image_details import delete_image_details
 from registry.image import image_registry
@@ -32,7 +35,7 @@ async def get_os_image(os_identifier: str, image_identifier: str, response: Resp
         return FileResponse(image_storage.get(persistent_image))
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
-        return {'message': 'Invalid Image Identifier'}
+        return ErrorMessage('Invalid Image Identifier')
 
 
 @image_router.delete('/{image_identifier}', status_code=status.HTTP_204_NO_CONTENT)
