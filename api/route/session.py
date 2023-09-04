@@ -15,3 +15,7 @@ async def add_session(os_identifier: str, session: TransientSessionData) -> Sess
     persistent_session = SessionData.from_transient(os_identifier, session)
     session_registry.add_session(persistent_session)
     return persistent_session
+
+@session_router.get('/')
+async def get_sessions(os_identifier: str):
+    return session_registry.get_all_sessions(os_identifier)

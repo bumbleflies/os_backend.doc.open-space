@@ -1,13 +1,21 @@
 import json
 from dataclasses import asdict
+from datetime import datetime
 from functools import partial
 from pathlib import Path
 from typing import Callable, Any
 
+from dacite import from_dict, Config
 from pysondb.db import JsonDatabase
 
 from api.encoder import DateTimeEncoder
 from api.model.session_data import SessionData
+
+
+def dict_to_session(session_dict):
+    return from_dict(data_class=SessionData, data=session_dict, config=Config(type_hooks={
+        datetime: datetime.fromisoformat
+    }))
 
 
 class OpenSpaceSessionJsonDatabase(JsonDatabase):
@@ -29,5 +37,8 @@ class OpenSpaceSessionJsonDatabase(JsonDatabase):
         for existing_data in self.getByQuery({'identifier': identifier}):
             self.deleteById(existing_data.get(self.id_fieldname))
 
+    def get_all_sessions(self, os_identifier: str):
+        return list(map(dict_to_session, self.getByQuery({'os_identifier': os_identifier})))
 
-session_registry = OpenSpaceSessionJsonDatabase()
+
+session_registry: OpenSpaceSessionJsonDatabase = OpenSpaceSessionJsonDatabase()
