@@ -83,5 +83,5 @@ class TestSessionApi(TestCase):
         create_response = self.test_client.post('/os/123/s/', json=self.test_session)
         self.assertEqual(201, create_response.status_code, create_response.content)
 
-        delete_response=self.test_client.delete('/os/123/s/345')
+        delete_response = self.test_client.delete('/os/123/s/345')
         self.assertEqual(204, delete_response.status_code, delete_response.content)
