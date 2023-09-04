@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from api.model.id_gen import generatorFactoryInstance
 from api.routes import app
 from os import listdir
-from registry import image_registry
+from registry.image import image_registry
 
 
 class TestImageApi(TestCase):
