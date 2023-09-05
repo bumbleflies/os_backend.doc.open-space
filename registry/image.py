@@ -16,9 +16,9 @@ def dict_to_image_data(img):
 class ImageJsonDatabase(JsonDatabase):
 
     def __init__(self) -> None:
-        self.file_store = Path('img/')
+        self.file_store = Path('_registry/')
         self.file_store.mkdir(exist_ok=True)
-        super().__init__(str(self.file_store.joinpath('registry.json')), 'id')
+        super().__init__(str(self.file_store.joinpath('impressions.json')), 'id')
 
     def add_image(self, image: PersistentImage) -> PersistentImage:
         self.delete_by_identifier(image.identifier)

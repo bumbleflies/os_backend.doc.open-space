@@ -23,9 +23,9 @@ def dict_to_os_data(os: Mapping[str, Any]):
 class OpenSpaceJsonDatabase(JsonDatabase):
 
     def __init__(self) -> None:
-        self.file_store = Path('os/')
+        self.file_store = Path('_registry/')
         self.file_store.mkdir(exist_ok=True)
-        super().__init__(str(self.file_store.joinpath('registry.json')), 'id')
+        super().__init__(str(self.file_store.joinpath('os.json')), 'id')
 
     def _get_dump_function(self) -> Callable[..., Any]:
         return partial(json.dump, cls=DateTimeEncoder)

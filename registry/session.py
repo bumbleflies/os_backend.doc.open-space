@@ -22,9 +22,9 @@ def dict_to_session(session_dict):
 class OpenSpaceSessionJsonDatabase(JsonDatabase):
 
     def __init__(self) -> None:
-        self.file_store = Path('sess/')
+        self.file_store = Path('_registry/')
         self.file_store.mkdir(exist_ok=True)
-        super().__init__(str(self.file_store.joinpath('registry.json')), 'id')
+        super().__init__(str(self.file_store.joinpath('sessions.json')), 'id')
 
     def _get_dump_function(self) -> Callable[..., Any]:
         return partial(json.dump, cls=DateTimeEncoder)
