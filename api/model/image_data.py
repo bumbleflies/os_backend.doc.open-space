@@ -10,6 +10,11 @@ class PersistentImage:
     is_header: bool = False
 
 
+@dataclass(kw_only=True)
+class SessionImage(PersistentImage):
+    session_identifier: str
+
+
 @dataclass
 class Details:
     description: str

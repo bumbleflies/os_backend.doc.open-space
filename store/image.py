@@ -44,4 +44,4 @@ class ImageStore:
         return self.storage_path.joinpath(persistent_image.os_identifier)
 
 
-image_storage = ImageStore()
+image_storage: ImageStore = ImageStore()

@@ -5,6 +5,7 @@ from api.route.image import image_router
 from api.route.image_details import image_details_router
 from api.route.os import os_router
 from api.route.session import session_router
+from api.route.session_images import session_images_router
 
 app = FastAPI()
 
@@ -26,6 +27,7 @@ app.include_router(os_router)
 app.include_router(image_router)
 app.include_router(image_details_router)
 app.include_router(session_router)
+app.include_router(session_images_router)
 
 
 @app.get('/health')
