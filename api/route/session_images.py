@@ -1,7 +1,8 @@
 from fastapi import APIRouter, UploadFile
 from starlette import status
-from starlette.responses import FileResponse
+from starlette.responses import FileResponse, Response
 
+from api.model.error import ErrorMessage
 from api.model.image_data import SessionImage
 from registry.session import session_registry
 from registry.session_images import session_images_registry
@@ -14,12 +15,15 @@ session_images_router = APIRouter(
 
 
 @session_images_router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_session_image(os_identifier: str, session_identifier: str, image: UploadFile) -> SessionImage:
+async def add_session_image(os_identifier: str, session_identifier: str, image: UploadFile, response: Response):
     if session_registry.has_session(os_identifier, session_identifier):
         session_image = SessionImage(session_identifier=session_identifier, os_identifier=os_identifier)
         session_images_registry.add_session_image(session_image)
         await image_storage.save(image, session_image)
         return session_image
+    else:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return ErrorMessage(f'No Session found for {session_identifier}')
 
 
 @session_images_router.get('/')
@@ -28,8 +32,11 @@ async def get_session_images(os_identifier: str, session_identifier: str) -> lis
 
 
 @session_images_router.get('/{image_identifier}')
-async def get_session_image(os_identifier: str, session_identifier: str, image_identifier: str):
+async def get_session_image(os_identifier: str, session_identifier: str, image_identifier: str, response: Response):
     session_image = SessionImage(os_identifier=os_identifier, session_identifier=session_identifier,
                                  identifier=image_identifier)
     if session_images_registry.has_image(session_image):
         return FileResponse(image_storage.get(session_image))
+    else:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return ErrorMessage(f'No Image found for {image_identifier}')

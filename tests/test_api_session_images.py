@@ -11,7 +11,7 @@ from registry.session import session_registry
 from registry.session_images import session_images_registry
 
 
-class TestSessionApi(TestCase):
+class TestSessionImagesApi(TestCase):
 
     def setUp(self) -> None:
         self.test_client = TestClient(app)
@@ -31,6 +31,12 @@ class TestSessionApi(TestCase):
         self.assertEqual(self.test_id, response.json()['identifier'], response.json())
         self.assertEqual(self.test_id, response.json()['session_identifier'], response.json())
 
+    def test_add_os_session_image_to_non_existing_session(self):
+        with open(self.fixture_image, 'rb') as image_file:
+            response = self.test_client.post(f'/os/os-123/s/non-existing/i', files={'image': image_file})
+
+        self.assertEqual(404, response.status_code, response.content)
+
     def test_get_os_session_images(self):
         self.provide_testfile()
 
@@ -49,6 +55,12 @@ class TestSessionApi(TestCase):
 
         get_response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/345')
         self.assertEqual(200, get_response.status_code, get_response.content)
+
+    def test_get_non_existing_os_session_image(self):
+        self.provide_testfile()
+
+        get_response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/non-345-existing')
+        self.assertEqual(404, get_response.status_code, get_response.content)
 
     def provide_testfile(self):
         with open(self.fixture_image, 'rb') as image_file:
