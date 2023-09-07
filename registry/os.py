@@ -50,4 +50,4 @@ class OpenSpaceJsonDatabase(JsonDatabase):
         return new_os
 
 
-os_registry = OpenSpaceJsonDatabase()
+os_registry:OpenSpaceJsonDatabase = OpenSpaceJsonDatabase()

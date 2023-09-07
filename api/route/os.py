@@ -6,7 +6,9 @@ from starlette.responses import Response
 
 from api.model.error import ErrorMessage
 from api.model.os_data import TransientOpenSpaceData, PersistentOpenSpaceData
+from api.route.session import delete_session
 from registry.os import os_registry, dict_to_os_data
+from registry.session import session_registry
 
 os_router = APIRouter(
     prefix='/os',
@@ -38,6 +40,8 @@ def get_open_space(identifier, response: Response) -> PersistentOpenSpaceData | 
 @os_router.delete('/{identifier}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_open_space(identifier: str):
     os_registry.delete_by_identifier(identifier)
+    for session in session_registry.get_all_sessions(identifier):
+        session_registry.delete_by_identifier(session.identifier)
 
 
 @os_router.put('/{identifier}')

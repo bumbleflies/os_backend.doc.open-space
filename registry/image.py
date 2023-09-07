@@ -42,4 +42,4 @@ class ImageJsonDatabase(JsonDatabase):
         return self.getByQuery({'os_identifier': image.os_identifier, 'identifier': image.identifier})
 
 
-image_registry = ImageJsonDatabase()
+image_registry:ImageJsonDatabase = ImageJsonDatabase()
