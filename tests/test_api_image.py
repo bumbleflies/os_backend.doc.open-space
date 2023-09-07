@@ -1,3 +1,4 @@
+from os import listdir
 from pathlib import Path
 from unittest import TestCase
 
@@ -5,7 +6,6 @@ from fastapi.testclient import TestClient
 
 from api.model.id_gen import generatorFactoryInstance
 from api.routes import app
-from os import listdir
 from registry.image import image_registry
 
 

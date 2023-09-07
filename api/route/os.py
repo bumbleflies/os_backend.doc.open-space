@@ -6,7 +6,6 @@ from starlette.responses import Response
 
 from api.model.error import ErrorMessage
 from api.model.os_data import TransientOpenSpaceData, PersistentOpenSpaceData
-from api.route.session import delete_session
 from registry.os import os_registry, dict_to_os_data
 from registry.session import session_registry
 

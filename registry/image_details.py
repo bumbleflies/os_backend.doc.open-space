@@ -33,4 +33,4 @@ class ImageDetailsJsonDatabase(JsonDatabase):
             self.deleteById(one(found_image).get(self.id_fieldname))
 
 
-image_details_registry :ImageDetailsJsonDatabase= ImageDetailsJsonDatabase()
+image_details_registry: ImageDetailsJsonDatabase = ImageDetailsJsonDatabase()

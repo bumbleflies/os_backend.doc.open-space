@@ -33,7 +33,7 @@ class TestSessionImagesApi(TestCase):
 
     def test_add_os_session_image_to_non_existing_session(self):
         with open(self.fixture_image, 'rb') as image_file:
-            response = self.test_client.post(f'/os/os-123/s/non-existing/i', files={'image': image_file})
+            response = self.test_client.post('/os/os-123/s/non-existing/i', files={'image': image_file})
 
         self.assertEqual(404, response.status_code, response.content)
 

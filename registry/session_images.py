@@ -39,7 +39,7 @@ class OpenSpaceSessionImageJsonDatabase(JsonDatabase):
                                 'identifier': session_image.identifier})
 
     def has_image(self, session_image: SessionImage):
-        return len(self.query_image(session_image))>0
+        return len(self.query_image(session_image)) > 0
 
 
 session_images_registry: OpenSpaceSessionImageJsonDatabase = OpenSpaceSessionImageJsonDatabase()

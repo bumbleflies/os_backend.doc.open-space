@@ -1,6 +1,6 @@
-import uvicorn as uvicorn
-
 import os
+
+import uvicorn as uvicorn
 
 if __name__ == '__main__':
     reload = os.getenv('OS_FRONTEND_RELOAD', False)
