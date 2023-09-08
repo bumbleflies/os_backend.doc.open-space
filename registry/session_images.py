@@ -5,7 +5,7 @@ from typing import Any
 from dacite import from_dict
 from pysondb.db import JsonDatabase
 
-from api.model.image_data import SessionImage
+from api.model.image_data import SessionImage, HeaderData
 
 
 def dict_to_session_image(img):
@@ -38,6 +38,10 @@ class OpenSpaceSessionImageJsonDatabase(JsonDatabase):
     def delete(self, session_image: SessionImage) -> None:
         for image in self.query_image(session_image):
             self.deleteById(image.get(self.id_fieldname))
+
+    def update_header(self, session_image: SessionImage, header_data: HeaderData):
+        for image in self.query_image(session_image):
+            self.updateById(image.get(self.id_fieldname), asdict(header_data))
 
 
 session_images_registry: OpenSpaceSessionImageJsonDatabase = OpenSpaceSessionImageJsonDatabase()
