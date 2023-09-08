@@ -27,8 +27,10 @@ async def add_session_image(os_identifier: str, session_identifier: str, image: 
 
 
 @session_images_router.get('/')
-async def get_session_images(os_identifier: str, session_identifier: str) -> list[SessionImage]:
-    return session_images_registry.get_for_session(os_identifier, session_identifier)
+async def get_session_images(os_identifier: str, session_identifier: str, only_header: bool = False) \
+        -> list[SessionImage]:
+    return list(filter(lambda i: not only_header or i.is_header,
+                       session_images_registry.get_for_session(os_identifier, session_identifier)))
 
 
 @session_images_router.get('/{image_identifier}')
@@ -50,8 +52,10 @@ async def delete_session_image(os_identifier: str, session_identifier: str, imag
         session_images_registry.delete(session_image)
         return image_storage.delete(session_image)
 
+
 @session_images_router.patch('/{image_identifier}', status_code=status.HTTP_204_NO_CONTENT)
-async def make_header_session_image(os_identifier: str, session_identifier: str, image_identifier: str, header_data: HeaderData):
+async def make_header_session_image(os_identifier: str, session_identifier: str, image_identifier: str,
+                                    header_data: HeaderData):
     session_image = SessionImage(os_identifier=os_identifier, session_identifier=session_identifier,
                                  identifier=image_identifier)
     session_images_registry.update_header(session_image, header_data)

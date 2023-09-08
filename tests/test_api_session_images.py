@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from pathlib import Path
-from unittest import TestCase
 
 from fastapi.testclient import TestClient
 
@@ -9,9 +8,10 @@ from api.model.session_data import SessionData
 from api.routes import app
 from registry.session import session_registry
 from registry.session_images import session_images_registry
+from tests import ApiTestCase
 
 
-class TestSessionImagesApi(TestCase):
+class TestSessionImagesApi(ApiTestCase):
 
     def setUp(self) -> None:
         self.test_client = TestClient(app)
@@ -72,8 +72,21 @@ class TestSessionImagesApi(TestCase):
 
     def test_make_header_image(self):
         self.provide_testfile()
-        patch_response = self.test_client.patch(f'/os/os-123/s/{self.test_id}/i/345',json={'is_header': True})
-        self.assertEqual(204, patch_response.status_code, patch_response.content)
+        patch_response = self.test_client.patch(f'/os/os-123/s/{self.test_id}/i/345', json={'is_header': True})
+        self.assert_response(patch_response, 204)
+
+    def test_get_header_image(self):
+        self.provide_testfile()
+        patch_response = self.test_client.patch(f'/os/os-123/s/{self.test_id}/i/345', json={'is_header': True})
+        self.assert_response(patch_response)
+        response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/?only_header=True')
+        self.assert_response(response)
+        self.assertDictEqual({
+            'identifier': '345',
+            'os_identifier': 'os-123',
+            'session_identifier': '345',
+            'is_header': True,
+        }, response.json()[0], response.json())
 
     def provide_testfile(self):
         with open(self.fixture_image, 'rb') as image_file:
