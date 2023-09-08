@@ -62,6 +62,14 @@ class TestSessionImagesApi(TestCase):
         get_response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/non-345-existing')
         self.assertEqual(404, get_response.status_code, get_response.content)
 
+    def test_delete_session_image(self):
+        self.provide_testfile()
+        get_response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/345')
+        self.assertEqual(200, get_response.status_code, get_response.content)
+
+        delete_response = self.test_client.delete(f'/os/os-123/s/{self.test_id}/i/345')
+        self.assertEqual(204, delete_response.status_code, delete_response.content)
+
     def provide_testfile(self):
         with open(self.fixture_image, 'rb') as image_file:
             return self.test_client.post(f'/os/os-123/s/{self.test_id}/i', files={'image': image_file})

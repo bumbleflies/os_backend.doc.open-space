@@ -1,13 +1,10 @@
-import json
 from dataclasses import asdict
-from functools import partial
 from pathlib import Path
-from typing import Callable, Any
+from typing import Any
 
 from dacite import from_dict
 from pysondb.db import JsonDatabase
 
-from api.encoder import DateTimeEncoder
 from api.model.image_data import SessionImage
 
 
@@ -22,9 +19,6 @@ class OpenSpaceSessionImageJsonDatabase(JsonDatabase):
         self.file_store.mkdir(exist_ok=True)
         super().__init__(str(self.file_store.joinpath('session_images.json')), 'id')
 
-    def _get_dump_function(self) -> Callable[..., Any]:
-        return partial(json.dump, cls=DateTimeEncoder)
-
     def add_session_image(self, session_image: SessionImage) -> SessionImage:
         self.add(asdict(session_image))
         return session_image
@@ -33,13 +27,17 @@ class OpenSpaceSessionImageJsonDatabase(JsonDatabase):
         return list(map(dict_to_session_image, self.getByQuery({'os_identifier': os_identifier,
                                                                 'session_identifier': session_identifier})))
 
-    def query_image(self, session_image: SessionImage):
+    def query_image(self, session_image: SessionImage) -> list[dict[str, Any]]:
         return self.getByQuery({'os_identifier': session_image.os_identifier,
                                 'session_identifier': session_image.session_identifier,
                                 'identifier': session_image.identifier})
 
-    def has_image(self, session_image: SessionImage):
+    def has_image(self, session_image: SessionImage) -> bool:
         return len(self.query_image(session_image)) > 0
+
+    def delete(self, session_image: SessionImage) -> None:
+        for image in self.query_image(session_image):
+            self.deleteById(image.get(self.id_fieldname))
 
 
 session_images_registry: OpenSpaceSessionImageJsonDatabase = OpenSpaceSessionImageJsonDatabase()

@@ -40,3 +40,12 @@ async def get_session_image(os_identifier: str, session_identifier: str, image_i
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return ErrorMessage(f'No Image found for {image_identifier}')
+
+
+@session_images_router.delete('/{image_identifier}', status_code=status.HTTP_204_NO_CONTENT)
+async def delete_session_image(os_identifier: str, session_identifier: str, image_identifier: str, response: Response):
+    session_image = SessionImage(os_identifier=os_identifier, session_identifier=session_identifier,
+                                 identifier=image_identifier)
+    if session_images_registry.has_image(session_image):
+        session_images_registry.delete(session_image)
+        return image_storage.delete(session_image)
