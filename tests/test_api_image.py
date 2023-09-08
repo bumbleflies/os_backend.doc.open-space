@@ -1,10 +1,7 @@
 from os import listdir
 from pathlib import Path
 
-from fastapi.testclient import TestClient
-
 from api.model.id_gen import generatorFactoryInstance
-from api.routes import app
 from registry.image import image_registry
 from tests import ApiTestCase
 
