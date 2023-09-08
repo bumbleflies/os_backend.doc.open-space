@@ -11,13 +11,6 @@ from tests import ApiTestCase
 
 class TestImageApi(ApiTestCase):
 
-    def provide_testfile(self, os_identifier='os-123', i_identifier='i-123'):
-        self.test_id = i_identifier
-        with open(self.fixture_image, 'rb') as image_file:
-            test_client_post = self.test_client.post(f'/os/{os_identifier}/i/', files={'image': image_file})
-        self.assert_response(test_client_post, 201)
-        return test_client_post
-
     def get_test_id(self):
         return self.test_id
 
@@ -26,8 +19,6 @@ class TestImageApi(ApiTestCase):
         image_registry.deleteAll()
         self.test_id = '123'
         generatorFactoryInstance.generator_function = lambda: self.get_test_id()
-        self.test_client = TestClient(app)
-        self.fixture_image = Path('tests').joinpath('fixtures/test-image.png')
 
     def test_create_os_image(self):
         with open(self.fixture_image, 'rb') as image_file:
@@ -38,12 +29,12 @@ class TestImageApi(ApiTestCase):
         self.assertEqual('123', response.json()['os_identifier'], response.json())
 
     def test_get_os_image(self):
-        self.provide_testfile()
+        self.upload_os_image()
         response = self.test_client.get('/os/os-123/i/i-123')
         self.assert_response(response, 200)
 
     def test_get_os_images(self):
-        self.provide_testfile()
+        self.upload_os_image()
         response = self.test_client.get('/os/os-123/i/')
         self.assert_response(response, 200)
         self.assertEqual(1, len(response.json()), response.json())
@@ -54,12 +45,12 @@ class TestImageApi(ApiTestCase):
         }, response.json()[0], response.json())
 
     def test_delete_os_image(self):
-        self.provide_testfile()
+        self.upload_os_image()
         response = self.test_client.delete('/os/os-123/i/i-123')
         self.assert_response(response, 204)
 
     def test_make_header(self):
-        self.provide_testfile()
+        self.upload_os_image()
         patch_response = self.test_client.patch('/os/os-123/i/i-123', json={'is_header': True})
         self.assert_response(patch_response, 204)
         response = self.test_client.get('/os/os-123/i/')
@@ -71,8 +62,8 @@ class TestImageApi(ApiTestCase):
         }, response.json()[0], response.json())
 
     def test_get_header_image(self):
-        self.provide_testfile()
-        self.provide_testfile(i_identifier='i-345')
+        self.upload_os_image()
+        self.upload_os_image(i_identifier='i-345')
         patch_response = self.test_client.patch('/os/os-123/i/i-345', json={'is_header': True})
         self.assert_response(patch_response, 204)
         response = self.test_client.get('/os/os-123/i/?only_header=True')
@@ -84,8 +75,8 @@ class TestImageApi(ApiTestCase):
         }, response.json()[0], response.json())
 
     def test_only_one_header_image(self):
-        self.provide_testfile(i_identifier='i-123')
-        self.provide_testfile(i_identifier='i-345')
+        self.upload_os_image(i_identifier='i-123')
+        self.upload_os_image(i_identifier='i-345')
         self.assertEqual(204, self.test_client.patch('/os/os-123/i/i-123', json={'is_header': True}).status_code)
         self.assertEqual(204, self.test_client.patch('/os/os-123/i/i-345', json={'is_header': True}).status_code)
         response = self.test_client.get('/os/os-123/i/?only_header=True')

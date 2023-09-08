@@ -56,6 +56,10 @@ async def delete_session_image(os_identifier: str, session_identifier: str, imag
 @session_images_router.patch('/{image_identifier}', status_code=status.HTTP_204_NO_CONTENT)
 async def make_header_session_image(os_identifier: str, session_identifier: str, image_identifier: str,
                                     header_data: HeaderData):
+    if header_data.is_header:
+        # only allow one header
+        for session_image in session_images_registry.getByQuery({'session_identifier': session_identifier}):
+            session_images_registry.updateById(session_image.get(session_images_registry.id_fieldname), {'is_header': False})
     session_image = SessionImage(os_identifier=os_identifier, session_identifier=session_identifier,
                                  identifier=image_identifier)
     session_images_registry.update_header(session_image, header_data)
