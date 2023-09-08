@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta
-from unittest import TestCase
 
 from fastapi.testclient import TestClient
 
 from api.model.id_gen import generatorFactoryInstance
 from api.routes import app
 from registry.session import session_registry
+from tests import ApiTestCase
 
 
-class TestSessionApi(TestCase):
+class TestSessionApi(ApiTestCase):
 
     def setUp(self) -> None:
         self.test_client = TestClient(app)
@@ -25,7 +25,7 @@ class TestSessionApi(TestCase):
     def test_add_os_session(self):
         response = self.test_client.post('/os/123/s/', json=self.test_session)
 
-        self.assertEqual(201, response.status_code, response.content)
+        self.assert_response(response, 201)
         self.assertEqual('345', response.json()['identifier'], response.json())
         self.assertEqual('123', response.json()['os_identifier'], response.json())
         self.assertEqual(1, len(session_registry.getByQuery({'identifier': '345'})), 'only one session per identifier')
@@ -34,13 +34,13 @@ class TestSessionApi(TestCase):
         self.test_client.post('/os/123/s/', json=self.test_session)
 
         response = self.test_client.get('/os/123/s/')
-        self.assertEqual(200, response.status_code, response.content)
+        self.assert_response(response, 200)
         self.assertEqual(1, len(response.json()))
 
     def test_edit_os_sessions(self):
         create_response = self.test_client.post('/os/123/s/', json=self.test_session)
 
-        self.assertEqual(201, create_response.status_code, create_response.content)
+        self.assert_response(create_response, 201)
         self.assertDictEqual({**self.test_session,
                               'identifier': '345',
                               'os_identifier': '123'}, create_response.json())
@@ -51,7 +51,7 @@ class TestSessionApi(TestCase):
             'end_date': (self.start_date + timedelta(hours=4)).isoformat()
         })
 
-        self.assertEqual(200, put_response.status_code, put_response.content)
+        self.assert_response(put_response, 200)
         self.assertDictEqual({'title': 'New Title',
                               'start_date': (self.start_date + timedelta(hours=2)).isoformat(),
                               'end_date': (self.start_date + timedelta(hours=4)).isoformat(),
@@ -61,14 +61,14 @@ class TestSessionApi(TestCase):
     def test_get_os_session(self):
         create_response = self.test_client.post('/os/123/s/', json=self.test_session)
 
-        self.assertEqual(201, create_response.status_code, create_response.content)
+        self.assert_response(create_response, 201)
 
         get_response = self.test_client.get('os/123/s/345')
-        self.assertEqual(200, get_response.status_code, get_response.content)
+        self.assert_response(get_response, 200)
 
     def test_get_non_existent_session(self):
         get_response = self.test_client.get('os/123/s/non-345-existent')
-        self.assertEqual(404, get_response.status_code, get_response.content)
+        self.assert_response(get_response, 404)
 
     def test_update_non_existent_session(self):
         put_response = self.test_client.put('/os/123/s/non-345-existent', json={
@@ -77,11 +77,11 @@ class TestSessionApi(TestCase):
             'end_date': (self.start_date + timedelta(hours=4)).isoformat()
         })
 
-        self.assertEqual(404, put_response.status_code, put_response.content)
+        self.assert_response(put_response, 404)
 
     def test_delete_session(self):
         create_response = self.test_client.post('/os/123/s/', json=self.test_session)
-        self.assertEqual(201, create_response.status_code, create_response.content)
+        self.assert_response(create_response, 201)
 
         delete_response = self.test_client.delete('/os/123/s/345')
-        self.assertEqual(204, delete_response.status_code, delete_response.content)
+        self.assert_response(delete_response, 204)

@@ -27,7 +27,7 @@ class TestSessionImagesApi(ApiTestCase):
     def test_add_os_session_image(self):
         response = self.provide_testfile()
 
-        self.assertEqual(201, response.status_code, response.content)
+        self.assert_response(response, 201)
         self.assertEqual(self.test_id, response.json()['identifier'], response.json())
         self.assertEqual(self.test_id, response.json()['session_identifier'], response.json())
 
@@ -35,13 +35,13 @@ class TestSessionImagesApi(ApiTestCase):
         with open(self.fixture_image, 'rb') as image_file:
             response = self.test_client.post('/os/os-123/s/non-existing/i', files={'image': image_file})
 
-        self.assertEqual(404, response.status_code, response.content)
+        self.assert_response(response, 404)
 
     def test_get_os_session_images(self):
         self.provide_testfile()
 
         get_response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i')
-        self.assertEqual(200, get_response.status_code, get_response.content)
+        self.assert_response(get_response)
         self.assertEqual(1, len(get_response.json()), get_response.json())
         self.assertDictEqual({
             'identifier': '345',
@@ -54,21 +54,21 @@ class TestSessionImagesApi(ApiTestCase):
         self.provide_testfile()
 
         get_response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/345')
-        self.assertEqual(200, get_response.status_code, get_response.content)
+        self.assert_response(get_response)
 
     def test_get_non_existing_os_session_image(self):
         self.provide_testfile()
 
         get_response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/non-345-existing')
-        self.assertEqual(404, get_response.status_code, get_response.content)
+        self.assert_response(get_response, 404)
 
     def test_delete_session_image(self):
         self.provide_testfile()
         get_response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/345')
-        self.assertEqual(200, get_response.status_code, get_response.content)
+        self.assert_response(get_response)
 
         delete_response = self.test_client.delete(f'/os/os-123/s/{self.test_id}/i/345')
-        self.assertEqual(204, delete_response.status_code, delete_response.content)
+        self.assert_response(delete_response, 204)
 
     def test_make_header_image(self):
         self.provide_testfile()
@@ -78,7 +78,7 @@ class TestSessionImagesApi(ApiTestCase):
     def test_get_header_image(self):
         self.provide_testfile()
         patch_response = self.test_client.patch(f'/os/os-123/s/{self.test_id}/i/345', json={'is_header': True})
-        self.assert_response(patch_response)
+        self.assert_response(patch_response, 204)
         response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/?only_header=True')
         self.assert_response(response)
         self.assertDictEqual({

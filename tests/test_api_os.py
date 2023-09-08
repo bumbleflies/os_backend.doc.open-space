@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta
-from unittest import TestCase
 
 from fastapi.testclient import TestClient
 
 from api.model.id_gen import generatorFactoryInstance
 from api.routes import app
 from registry.os import os_registry
+from tests import ApiTestCase
 
 
-class TestOsApi(TestCase):
+class TestOsApi(ApiTestCase):
 
     def setUp(self) -> None:
         super().setUp()
@@ -25,12 +25,12 @@ class TestOsApi(TestCase):
 
     def test_get_health(self):
         response = self.test_client.get('/health')
-        self.assertEqual(200, response.status_code)
+        self.assert_response(response, 200)
 
     def test_create_os(self):
         response = self.test_client.post('/os', json=self.test_os)
 
-        self.assertEqual(201, response.status_code, response.content)
+        self.assert_response(response, 201)
 
         self.assertDictEqual({
             'title': 'test title',
@@ -44,7 +44,7 @@ class TestOsApi(TestCase):
         self.test_client.post('/os', json=self.test_os)
 
         response = self.test_client.get('/os')
-        self.assertEqual(200, response.status_code)
+        self.assert_response(response, 200)
 
         self.assertEqual(1, len(response.json()))
 
@@ -60,7 +60,7 @@ class TestOsApi(TestCase):
         create_response = self.test_client.post('/os', json=self.test_os)
         os_id = create_response.json()['identifier']
         os_response = self.test_client.get(f'/os/{os_id}')
-        self.assertEqual(200, os_response.status_code)
+        self.assert_response(os_response, 200)
 
         self.assertDictEqual({
             'title': 'test title',
@@ -86,7 +86,7 @@ class TestOsApi(TestCase):
 
         put_response = self.test_client.put(f'/os/{os_id}', json=test_os_2)
 
-        self.assertEqual(200, put_response.status_code)
+        self.assert_response(put_response, 200)
         self.assertDictEqual({
             'title': 'new title',
             'end_date': (self.start_date + timedelta(days=1)).isoformat(),
