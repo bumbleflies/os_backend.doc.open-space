@@ -30,7 +30,9 @@ async def get_open_spaces() -> list[PersistentOpenSpaceData]:
 
 @os_router.get('/{identifier}')
 def get_open_space(identifier: str, with_header_images: bool = False,
-                   response: Response = None) -> PersistentOpenSpaceData|PersistentOpenSpaceDataWithHeader | ErrorMessage:
+                   response: Response = None) -> (PersistentOpenSpaceData |
+                                                  PersistentOpenSpaceDataWithHeader |
+                                                  ErrorMessage):
     query_result = os_registry.getByQuery({'identifier': identifier})
     if 1 == len(query_result):
         os = dict_to_os_data(one(query_result))

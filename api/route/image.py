@@ -7,7 +7,7 @@ from starlette.responses import Response, FileResponse
 from api.model.error import ErrorMessage
 from api.model.image_data import PersistentImage, HeaderData
 from api.route.image_details import delete_image_details
-from registry.image import image_registry, header_filter
+from registry.image import image_registry
 from store.image import image_storage
 
 image_router = APIRouter(
