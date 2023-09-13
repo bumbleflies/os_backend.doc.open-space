@@ -21,8 +21,9 @@ async def add_session(os_identifier: str, session: TransientSessionData) -> Sess
 
 
 @session_router.get('/')
-async def get_sessions(os_identifier: str, with_header_images: bool = False) -> list[
-    SessionData]|list[SessionDataWithHeader]:
+async def get_sessions(os_identifier: str, with_header_images: bool = False) \
+        -> (list[SessionData] |
+            list[SessionDataWithHeader]):
     all_sessions = session_registry.get_all_sessions(os_identifier)
     if with_header_images:
         all_session_with_header = []
@@ -31,7 +32,7 @@ async def get_sessions(os_identifier: str, with_header_images: bool = False) -> 
                                                                      session_identifier=session.identifier,
                                                                      only_header=with_header_images)
             all_session_with_header.append(SessionDataWithHeader.from_session_and_header_image(session, session_images))
-        all_sessions=all_session_with_header
+        all_sessions = all_session_with_header
     return all_sessions
 
 

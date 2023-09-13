@@ -97,7 +97,7 @@ class TestSessionApi(ApiTestCase):
                                                 json={'is_header': True})
         self.assert_response(patch_response, 204)
 
-        get_response = self.test_client.get(f'os/123/s?with_header_images=true')
+        get_response = self.test_client.get('os/123/s?with_header_images=true')
         self.assert_response(get_response, 200)
 
         self.assertDictEqual({'end_date': (self.start_date + timedelta(hours=1)).isoformat(),

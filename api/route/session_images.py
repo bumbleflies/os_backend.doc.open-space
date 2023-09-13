@@ -29,7 +29,7 @@ async def add_session_image(os_identifier: str, session_identifier: str, image: 
 @session_images_router.get('/')
 async def get_session_images(os_identifier: str, session_identifier: str, only_header: bool = False) \
         -> list[SessionImage]:
-    return session_images_registry.get_for_session(os_identifier, session_identifier,only_header)
+    return session_images_registry.get_for_session(os_identifier, session_identifier, only_header)
 
 
 @session_images_router.get('/{image_identifier}')
@@ -58,7 +58,8 @@ async def make_header_session_image(os_identifier: str, session_identifier: str,
     if header_data.is_header:
         # only allow one header
         for session_image in session_images_registry.getByQuery({'session_identifier': session_identifier}):
-            session_images_registry.updateById(session_image.get(session_images_registry.id_fieldname), {'is_header': False})
+            session_images_registry.updateById(session_image.get(session_images_registry.id_fieldname),
+                                               {'is_header': False})
     session_image = SessionImage(os_identifier=os_identifier, session_identifier=session_identifier,
                                  identifier=image_identifier)
     session_images_registry.update_header(session_image, header_data)
