@@ -20,7 +20,7 @@ async def add_session(os_identifier: str, session: TransientSessionData) -> Sess
 
 
 @session_router.get('/')
-async def get_sessions(os_identifier: str) -> list[SessionData]:
+async def get_sessions(os_identifier: str, with_header_images: bool = False) -> list[SessionData]:
     return session_registry.get_all_sessions(os_identifier)
 
 

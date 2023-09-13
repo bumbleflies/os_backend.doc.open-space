@@ -5,8 +5,10 @@ from starlette import status
 from starlette.responses import Response
 
 from api.model.error import ErrorMessage
-from api.model.os_data import TransientOpenSpaceData, PersistentOpenSpaceData
-from registry.os import os_registry, dict_to_os_data
+from api.model.os_data import TransientOpenSpaceData, PersistentOpenSpaceData, PersistentOpenSpaceDataWithHeader, \
+    dict_to_os_data
+from registry.image import image_registry
+from registry.os import os_registry
 from registry.session import session_registry
 
 os_router = APIRouter(
@@ -27,10 +29,15 @@ async def get_open_spaces() -> list[PersistentOpenSpaceData]:
 
 
 @os_router.get('/{identifier}')
-def get_open_space(identifier, response: Response) -> PersistentOpenSpaceData | ErrorMessage:
+def get_open_space(identifier: str, with_header_images: bool = False,
+                   response: Response = None) -> PersistentOpenSpaceData|PersistentOpenSpaceDataWithHeader | ErrorMessage:
     query_result = os_registry.getByQuery({'identifier': identifier})
     if 1 == len(query_result):
-        return dict_to_os_data(one(query_result))
+        os = dict_to_os_data(one(query_result))
+        if with_header_images:
+            os = PersistentOpenSpaceDataWithHeader.from_os_header(os, image_registry.get_for_os(os.identifier,
+                                                                                                with_header_images))
+        return os
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return ErrorMessage('Invalid OpenSpace Identifier')

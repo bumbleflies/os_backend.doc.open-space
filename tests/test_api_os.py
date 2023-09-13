@@ -97,3 +97,24 @@ class TestOsApi(ApiTestCase):
 
     def test_put_not_found(self):
         self.assertEqual(404, self.test_client.put('/os/456-not-existing-456', json=self.test_os).status_code)
+
+    def test_get_os_with_header_image(self):
+        create_response = self.test_client.post('/os', json=self.test_os)
+        os_id = create_response.json()['identifier']
+        upload_response = self.upload_os_image(os_identifier=os_id)
+        image_id = upload_response.json()['identifier']
+        patch_response = self.test_client.patch(f'/os/{os_id}/i/{image_id}', json={'is_header': True})
+        self.assert_response(patch_response, 204)
+        os_response = self.test_client.get(f'/os/{os_id}?with_header_images=true')
+        self.assert_response(os_response, 200)
+
+        self.assertDictEqual({
+            'title': 'test title',
+            'end_date': (self.start_date + timedelta(days=1)).isoformat(),
+            'identifier': '123',
+            'location': {'lat': 1.0, 'lng': 2.0},
+            'start_date': self.start_date.isoformat(),
+            'header_images': [{'identifier': 'i-123',
+                               'is_header': True,
+                               'os_identifier': '123'}]
+        }, os_response.json())

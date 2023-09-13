@@ -51,3 +51,4 @@ class TestIntegrationApi(ApiTestCase):
         session_get_response = self.test_client.get(f'/os/{os_id}/s')
         self.assert_response(session_get_response, 200)
         self.assertEqual(0, len(session_get_response.json()))
+

@@ -3,6 +3,7 @@ from pathlib import Path
 
 from api.model.id_gen import generatorFactoryInstance
 from registry.image import image_registry
+from store.image import image_storage
 from tests import ApiTestCase
 
 
@@ -14,6 +15,7 @@ class TestImageApi(ApiTestCase):
     def setUp(self) -> None:
         super().setUp()
         image_registry.deleteAll()
+        image_storage.delete_all()
         self.test_id = '123'
         generatorFactoryInstance.generator_function = lambda: self.get_test_id()
 

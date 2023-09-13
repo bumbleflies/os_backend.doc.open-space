@@ -13,6 +13,14 @@ def dict_to_image_data(img):
     return from_dict(data_class=PersistentImage, data=img)
 
 
+def header_filter(image: PersistentImage):
+    return image.is_header
+
+
+def any_filter(image: PersistentImage):
+    return True
+
+
 class ImageJsonDatabase(JsonDatabase):
 
     def __init__(self) -> None:
@@ -29,8 +37,10 @@ class ImageJsonDatabase(JsonDatabase):
         for existing_data in self.getByQuery({'identifier': identifier}):
             self.deleteById(existing_data.get(self.id_fieldname))
 
-    def get_for_os(self, os_identifier: str) -> list[PersistentImage]:
-        return list(map(dict_to_image_data, self.getByQuery({'os_identifier': os_identifier})))
+    def get_for_os(self, os_identifier: str, only_header: bool = False) -> (
+            list)[PersistentImage]:
+        used_filter = only_header and header_filter or any_filter
+        return list(filter(used_filter, map(dict_to_image_data, self.getByQuery({'os_identifier': os_identifier}))))
 
     def has_image(self, image: PersistentImage) -> bool:
         return 1 == len(self.query_image(image))

@@ -1,23 +1,15 @@
 import json
 from dataclasses import asdict
-from datetime import datetime
 from functools import partial
 from pathlib import Path
-from typing import Callable, Any, Mapping
+from typing import Callable, Any
 
-from dacite import from_dict, Config
 from more_itertools import one
 from pysondb.db import JsonDatabase
 from pysondb.errors import DataNotFoundError
 
 from api.encoder import DateTimeEncoder
-from api.model.os_data import PersistentOpenSpaceData
-
-
-def dict_to_os_data(os: Mapping[str, Any]):
-    return from_dict(data_class=PersistentOpenSpaceData, data=os, config=Config(type_hooks={
-        datetime: datetime.fromisoformat
-    }))
+from api.model.os_data import PersistentOpenSpaceData, dict_to_os_data
 
 
 class OpenSpaceJsonDatabase(JsonDatabase):

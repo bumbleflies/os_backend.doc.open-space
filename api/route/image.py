@@ -7,7 +7,7 @@ from starlette.responses import Response, FileResponse
 from api.model.error import ErrorMessage
 from api.model.image_data import PersistentImage, HeaderData
 from api.route.image_details import delete_image_details
-from registry.image import image_registry
+from registry.image import image_registry, header_filter
 from store.image import image_storage
 
 image_router = APIRouter(
@@ -25,7 +25,7 @@ async def upload_os_images(os_identifier, image: UploadFile) -> PersistentImage:
 
 @image_router.get('/')
 async def get_os_images(os_identifier: str, only_header: bool = False) -> list[PersistentImage]:
-    return list(filter(lambda i: not only_header or i.is_header, image_registry.get_for_os(os_identifier)))
+    return image_registry.get_for_os(os_identifier, only_header)
 
 
 @image_router.get('/{image_identifier}')

@@ -34,6 +34,12 @@ class ImageStore:
             if len(listdir(self.image_dir(persistent_image))) == 0:
                 self.image_dir(persistent_image).rmdir()
 
+    def delete_all(self):
+        for image_dir in listdir(self.storage_path):
+            for image_file in listdir(self.storage_path.joinpath(image_dir)):
+                self.storage_path.joinpath(image_dir, image_file).unlink()
+            self.storage_path.joinpath(image_dir).rmdir()
+
     @property
     def storage_path(self):
         if not self._image_storage.exists():
