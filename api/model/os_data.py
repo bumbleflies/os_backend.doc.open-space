@@ -5,7 +5,7 @@ from typing import Mapping, Any
 from dacite import from_dict, Config
 
 from api.model.id_gen import generatorFactoryInstance
-from api.model.image_data import PersistentImage
+from api.model.image_data import PersistentImage, WithHeaderImages
 
 
 @dataclass
@@ -34,9 +34,7 @@ class PersistentOpenSpaceData(TransientOpenSpaceData):
 
 
 @dataclass
-class PersistentOpenSpaceDataWithHeader(PersistentOpenSpaceData):
-    header_images: list[PersistentImage]
-
+class PersistentOpenSpaceDataWithHeader(WithHeaderImages, PersistentOpenSpaceData):
     @classmethod
     def from_os_header(cls, os: PersistentOpenSpaceData, header_images: list[PersistentImage]):
         os_dict = asdict(os)

@@ -3,8 +3,9 @@ from starlette import status
 from starlette.responses import Response
 
 from api.model.error import ErrorMessage
-from api.model.session_data import SessionData, TransientSessionData
+from api.model.session_data import SessionData, TransientSessionData, SessionDataWithHeader
 from registry.session import session_registry
+from registry.session_images import session_images_registry
 
 session_router = APIRouter(
     prefix='/os/{os_identifier}/s',
@@ -20,8 +21,18 @@ async def add_session(os_identifier: str, session: TransientSessionData) -> Sess
 
 
 @session_router.get('/')
-async def get_sessions(os_identifier: str, with_header_images: bool = False) -> list[SessionData]:
-    return session_registry.get_all_sessions(os_identifier)
+async def get_sessions(os_identifier: str, with_header_images: bool = False) -> list[
+    SessionData]|list[SessionDataWithHeader]:
+    all_sessions = session_registry.get_all_sessions(os_identifier)
+    if with_header_images:
+        all_session_with_header = []
+        for session in all_sessions:
+            session_images = session_images_registry.get_for_session(os_identifier=session.os_identifier,
+                                                                     session_identifier=session.identifier,
+                                                                     only_header=with_header_images)
+            all_session_with_header.append(SessionDataWithHeader.from_session_and_header_image(session, session_images))
+        all_sessions=all_session_with_header
+    return all_sessions
 
 
 @session_router.put('/{session_identifier}')

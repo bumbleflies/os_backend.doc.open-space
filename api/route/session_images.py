@@ -29,8 +29,7 @@ async def add_session_image(os_identifier: str, session_identifier: str, image: 
 @session_images_router.get('/')
 async def get_session_images(os_identifier: str, session_identifier: str, only_header: bool = False) \
         -> list[SessionImage]:
-    return list(filter(lambda i: not only_header or i.is_header,
-                       session_images_registry.get_for_session(os_identifier, session_identifier)))
+    return session_images_registry.get_for_session(os_identifier, session_identifier,only_header)
 
 
 @session_images_router.get('/{image_identifier}')

@@ -6,6 +6,7 @@ from dacite import from_dict
 from pysondb.db import JsonDatabase
 
 from api.model.image_data import SessionImage, HeaderData
+from registry.image import header_filter, any_filter
 
 
 def dict_to_session_image(img):
@@ -23,9 +24,12 @@ class OpenSpaceSessionImageJsonDatabase(JsonDatabase):
         self.add(asdict(session_image))
         return session_image
 
-    def get_for_session(self, os_identifier: str, session_identifier: str) -> list[SessionImage]:
-        return list(map(dict_to_session_image, self.getByQuery({'os_identifier': os_identifier,
-                                                                'session_identifier': session_identifier})))
+    def get_for_session(self, os_identifier: str, session_identifier: str, only_header: bool = False) \
+            -> list[SessionImage]:
+        used_filter = only_header and header_filter or any_filter
+        return list(filter(used_filter, map(dict_to_session_image,
+                                            self.getByQuery({'os_identifier': os_identifier,
+                                                             'session_identifier': session_identifier}))))
 
     def query_image(self, session_image: SessionImage) -> list[dict[str, Any]]:
         return self.getByQuery({'os_identifier': session_image.os_identifier,

@@ -28,3 +28,8 @@ class ImageDetails(Details):
 @dataclass
 class HeaderData:
     is_header: bool
+
+
+@dataclass
+class WithHeaderImages:
+    header_images: list[PersistentImage]
