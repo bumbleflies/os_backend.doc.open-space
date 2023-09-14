@@ -5,3 +5,4 @@ dacite
 python-multipart
 pysondb
 more_itertools
+Pillow
