@@ -1,5 +1,4 @@
 from pathlib import Path
-from pathlib import Path
 from unittest import IsolatedAsyncioTestCase
 
 from fastapi import UploadFile
@@ -18,7 +17,8 @@ class TestImageStore(IsolatedAsyncioTestCase):
 
     async def test_creates_thumbnail(self):
         with open(self.fixture_image, 'rb') as image_file:
-            save_task = await self.image_store.save(UploadFile(image_file), PersistentImage(os_identifier='os-123'))
+            (_, save_task) = await self.image_store.save(UploadFile(image_file),
+                                                         PersistentImage(os_identifier='os-123'))
 
         await save_task
         self.assertTrue(Path('img').joinpath('os-123').joinpath('i-123').exists())

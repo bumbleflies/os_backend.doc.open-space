@@ -9,6 +9,14 @@ class PersistentImage:
     identifier: str = field(default_factory=generatorFactoryInstance.instanciator)
     is_header: bool = False
 
+    @property
+    def thumb_name(self):
+        return f'{self.identifier}.thumb'
+
+    @property
+    def name(self):
+        return self.identifier
+
 
 @dataclass(kw_only=True)
 class SessionImage(PersistentImage):

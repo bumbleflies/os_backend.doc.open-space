@@ -93,7 +93,7 @@ class TestImageApi(ApiTestCase):
         response = self.test_client.get('/os/123/i/')
         self.assert_response(response, 200)
         self.assertEqual(2, len(response.json()), response.json())
-        self.assertEqual(2, len(listdir(Path('img').joinpath('123'))))
+        self.assertEqual(4, len(listdir(Path('img').joinpath('123'))))
         response_del1 = self.test_client.delete('/os/123/i/123')
         self.assert_response(response_del1, 204)
         response_del2 = self.test_client.delete('/os/123/i/345')

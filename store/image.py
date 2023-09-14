@@ -13,28 +13,25 @@ class ImageStore:
     def __init__(self, path='img'):
         self._image_storage = Path(path)
 
-    async def save(self, image: UploadFile, persistent_image: PersistentImage) -> Task[None]:
+    async def save(self, image: UploadFile, persistent_image: PersistentImage) -> (PersistentImage, Task[None]):
         os_path = self.image_dir(persistent_image)
         if not os_path.exists():
             os_path.mkdir()
-        with os_path.joinpath(persistent_image.identifier) as image_file:
+        with os_path.joinpath(persistent_image.name) as image_file:
             image_file.write_bytes(await image.read())
 
-        return asyncio.create_task(self.create_thumbnail(image_file))
-
-    def load(self, os_identifier: str) -> list[PersistentImage]:
-        os_image_path = self.storage_path.joinpath(os_identifier)
-        if os_image_path.exists():
-            return [PersistentImage(os_identifier, identifier=pi) for pi in listdir(os_image_path)]
-        else:
-            return []
+        return persistent_image, asyncio.create_task(self.create_thumbnail(persistent_image))
 
     def get(self, persistent_image: PersistentImage):
-        return self.image_dir(persistent_image).joinpath(persistent_image.identifier)
+        return self.image_dir(persistent_image).joinpath(persistent_image.name)
+
+    def get_thumb(self, persistent_image: PersistentImage):
+        return self.image_dir(persistent_image).joinpath(persistent_image.thumb_name)
 
     def delete(self, persistent_image: PersistentImage):
         if self.get(persistent_image).exists():
             self.get(persistent_image).unlink()
+            self.get_thumb(persistent_image).unlink()
             if len(listdir(self.image_dir(persistent_image))) == 0:
                 self.image_dir(persistent_image).rmdir()
 
@@ -53,10 +50,11 @@ class ImageStore:
     def image_dir(self, persistent_image: PersistentImage):
         return self.storage_path.joinpath(persistent_image.os_identifier)
 
-    async def create_thumbnail(self, image: Path, size=(128, 128)) -> None:
-        with Image.open(image) as im:
+    async def create_thumbnail(self, image: PersistentImage, size=(128, 128)) -> None:
+        image_file = self.image_dir(image).joinpath(image.name)
+        with Image.open(image_file) as im:
             im.thumbnail(size)
-            return im.save(image.parent.joinpath(f'{image.name}.thumb'), "PNG")
+            return im.save(image_file.parent.joinpath(image.thumb_name), "PNG")
 
 
 image_storage: ImageStore = ImageStore()

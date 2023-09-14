@@ -20,7 +20,8 @@ image_router = APIRouter(
 async def upload_os_images(os_identifier, image: UploadFile) -> PersistentImage:
     persistent_image = PersistentImage(os_identifier)
     image_registry.add_image(persistent_image)
-    return await image_storage.save(image, persistent_image)
+    (saved_image, _) = await image_storage.save(image, persistent_image)
+    return saved_image
 
 
 @image_router.get('/')
