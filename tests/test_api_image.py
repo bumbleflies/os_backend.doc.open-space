@@ -3,10 +3,12 @@ from os import listdir
 from pathlib import Path
 
 from PIL import Image
+from httpx import Response
 
 from api.model.id_gen import generatorFactoryInstance
+from api.model.image_data import ImageType, image_type_sizes
 from registry.image import image_registry
-from store.image import image_storage, THUMBNAIL_SIZE
+from store.image import image_storage
 from tests import ApiTestCase
 
 
@@ -96,17 +98,24 @@ class TestImageApi(ApiTestCase):
         response = self.test_client.get('/os/123/i/')
         self.assert_response(response, 200)
         self.assertEqual(2, len(response.json()), response.json())
-        self.assertEqual(4, len(listdir(Path('img').joinpath('123'))))
+        self.assertEqual(6, len(listdir(Path('img').joinpath('123'))))
         response_del1 = self.test_client.delete('/os/123/i/123')
         self.assert_response(response_del1, 204)
         response_del2 = self.test_client.delete('/os/123/i/345')
         self.assert_response(response_del2, 204)
         self.assertFalse(Path('img').joinpath('123').exists())
 
-    def test_get_image_thumbnail(self):
+    def test_get_image_different_sizes(self):
         self.upload_os_image()
-        response = self.test_client.get('/os/os-123/i/i-123?thumbnail=true')
+        response = self.test_client.get('/os/os-123/i/i-123?image_type=thumb')
+        self.assert_image_type(response, image_type_sizes[ImageType.thumb])
+        response = self.test_client.get('/os/os-123/i/i-123?image_type=header')
+        self.assert_image_type(response, image_type_sizes[ImageType.header])
+        response = self.test_client.get('/os/os-123/i/i-123?image_type=full')
+        self.assert_image_type(response, (301, 301))
+
+    def assert_image_type(self, response: Response, size: tuple[int, int]):
         self.assert_response(response, 200)
         with Image.open(BytesIO(response.content)) as image:
             self.assertEqual('PNG', image.format)
-            self.assertEqual(THUMBNAIL_SIZE, image.size)
+            self.assertEqual(size, image.size)

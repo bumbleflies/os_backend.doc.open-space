@@ -6,11 +6,11 @@ from PIL import Image
 from fastapi.testclient import TestClient
 
 from api.model.id_gen import generatorFactoryInstance
+from api.model.image_data import ImageType, image_type_sizes
 from api.model.session_data import SessionData
 from api.routes import app
 from registry.session import session_registry
 from registry.session_images import session_images_registry
-from store.image import THUMBNAIL_SIZE
 from tests import ApiTestCase
 
 
@@ -104,8 +104,8 @@ class TestSessionImagesApi(ApiTestCase):
 
     def test_get_image_thumbnail(self):
         self.upload_session_image(s_identifier=self.test_id, i_identifier='i-123')
-        response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/i-123?thumbnail=true')
+        response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/i-123?image_type=thumb')
         self.assert_response(response, 200)
         with Image.open(BytesIO(response.content)) as image:
             self.assertEqual('PNG', image.format)
-            self.assertEqual(THUMBNAIL_SIZE, image.size)
+            self.assertEqual(image_type_sizes[ImageType.thumb], image.size)

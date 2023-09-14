@@ -5,7 +5,7 @@ from starlette import status
 from starlette.responses import Response, FileResponse
 
 from api.model.error import ErrorMessage
-from api.model.image_data import PersistentImage, HeaderData
+from api.model.image_data import PersistentImage, HeaderData, ImageType
 from api.route.image_details import delete_image_details
 from registry.image import image_registry
 from store.image import image_storage
@@ -30,14 +30,13 @@ async def get_os_images(os_identifier: str, only_header: bool = False) -> list[P
 
 
 @image_router.get('/{image_identifier}')
-async def get_os_image(os_identifier: str, image_identifier: str, thumbnail: bool = False, response: Response = None):
+async def get_os_image(os_identifier: str, image_identifier: str,
+                       image_type: ImageType = ImageType.thumb,
+                       response: Response = None):
     persistent_image = PersistentImage(os_identifier, image_identifier)
     if image_registry.has_image(persistent_image):
-        if thumbnail:
-            image_file = FileResponse(image_storage.get_thumb(persistent_image))
-        else:
-            image_file = FileResponse(image_storage.get(persistent_image))
-        return image_file
+
+        return FileResponse(image_storage.get(persistent_image).as_type(image_type))
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return ErrorMessage('Invalid Image Identifier')

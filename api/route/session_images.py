@@ -3,7 +3,7 @@ from starlette import status
 from starlette.responses import FileResponse, Response
 
 from api.model.error import ErrorMessage
-from api.model.image_data import SessionImage, HeaderData
+from api.model.image_data import SessionImage, HeaderData, ImageType
 from registry.session import session_registry
 from registry.session_images import session_images_registry
 from store.image import image_storage
@@ -34,16 +34,13 @@ async def get_session_images(os_identifier: str, session_identifier: str, only_h
 
 @session_images_router.get('/{image_identifier}')
 async def get_session_image(os_identifier: str, session_identifier: str, image_identifier: str,
-                            thumbnail: bool = False,
+                            image_type: ImageType = ImageType.thumb,
                             response: Response = None):
     session_image = SessionImage(os_identifier=os_identifier, session_identifier=session_identifier,
                                  identifier=image_identifier)
     if session_images_registry.has_image(session_image):
-        if thumbnail:
-            image_file = FileResponse(image_storage.get_thumb(session_image))
-        else:
-            image_file = FileResponse(image_storage.get(session_image))
-        return image_file
+
+        return FileResponse(image_storage.get(session_image).as_type(image_type))
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return ErrorMessage(f'No Image found for {image_identifier}')

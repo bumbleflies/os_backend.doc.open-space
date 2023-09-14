@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from enum import Enum
 
 from api.model.id_gen import generatorFactoryInstance
 
@@ -14,7 +15,11 @@ class PersistentImage:
         return f'{self.identifier}.thumb'
 
     @property
-    def name(self):
+    def header_name(self):
+        return f'{self.identifier}.header'
+
+    @property
+    def full_name(self):
         return self.identifier
 
 
@@ -41,3 +46,18 @@ class HeaderData:
 @dataclass
 class WithHeaderImages:
     header_images: list[PersistentImage]
+
+
+class ImageType(Enum):
+    full: str = 'full'
+    thumb: str = 'thumb'
+    header: str = 'header'
+
+    def filename(self, image: PersistentImage):
+        return getattr(image, f'{self.value}_name')
+
+
+image_type_sizes = {
+    ImageType.thumb: (150, 150),
+    ImageType.header: (300, 300),
+}

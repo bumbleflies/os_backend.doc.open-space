@@ -6,9 +6,32 @@ from pathlib import Path
 from PIL import Image
 from fastapi import UploadFile
 
-from api.model.image_data import PersistentImage
+from api.model.image_data import PersistentImage, ImageType, image_type_sizes
 
-THUMBNAIL_SIZE = (150, 150)
+
+class ImageFilenameResolver:
+    def __init__(self, base_path: Path, image: PersistentImage):
+        self.base_path = base_path
+        self.image = image
+
+    def as_type(self, _type: ImageType):
+        return self.base_path.joinpath(_type.filename(self.image))
+
+
+class ImageSizesCreator:
+    def __init__(self, file_resolver: ImageFilenameResolver):
+        self.file_resolver = file_resolver
+
+    async def resize_to(self, image: PersistentImage, _type: ImageType) -> None:
+        with Image.open(self.file_resolver.as_type(ImageType.full)) as im:
+            im.thumbnail(image_type_sizes[_type])
+            return im.save(self.file_resolver.as_type(_type), "PNG")
+
+    async def resize_all(self, image: PersistentImage):
+        return asyncio.wait((
+            asyncio.create_task(self.resize_to(image, ImageType.thumb)),
+            asyncio.create_task(self.resize_to(image, ImageType.header))
+        ))
 
 
 class ImageStore:
@@ -19,23 +42,19 @@ class ImageStore:
         os_path = self.image_dir(persistent_image)
         if not os_path.exists():
             os_path.mkdir()
-        with os_path.joinpath(persistent_image.name) as image_file:
+        with os_path.joinpath(persistent_image.full_name) as image_file:
             image_file.write_bytes(await image.read())
 
-        return persistent_image, asyncio.create_task(self.create_thumbnail(persistent_image))
+        return persistent_image, await ImageSizesCreator(self.get(persistent_image)).resize_all(persistent_image)
 
     def get(self, persistent_image: PersistentImage):
-        return self.image_dir(persistent_image).joinpath(persistent_image.name)
-
-    def get_thumb(self, persistent_image: PersistentImage):
-        return self.image_dir(persistent_image).joinpath(persistent_image.thumb_name)
+        return ImageFilenameResolver(self.image_dir(persistent_image), persistent_image)
 
     def delete(self, persistent_image: PersistentImage):
-        if self.get(persistent_image).exists():
-            self.get(persistent_image).unlink()
-            self.get_thumb(persistent_image).unlink()
-            if len(listdir(self.image_dir(persistent_image))) == 0:
-                self.image_dir(persistent_image).rmdir()
+        for _type in ImageType:
+            self.get(persistent_image).as_type(_type).unlink(missing_ok=True)
+        if len(listdir(self.image_dir(persistent_image))) == 0:
+            self.image_dir(persistent_image).rmdir()
 
     def delete_all(self):
         for image_dir in listdir(self.storage_path):
@@ -51,12 +70,6 @@ class ImageStore:
 
     def image_dir(self, persistent_image: PersistentImage):
         return self.storage_path.joinpath(persistent_image.os_identifier)
-
-    async def create_thumbnail(self, image: PersistentImage, size=THUMBNAIL_SIZE) -> None:
-        image_file = self.image_dir(image).joinpath(image.name)
-        with Image.open(image_file) as im:
-            im.thumbnail(size)
-            return im.save(image_file.parent.joinpath(image.thumb_name), "PNG")
 
 
 image_storage: ImageStore = ImageStore()
