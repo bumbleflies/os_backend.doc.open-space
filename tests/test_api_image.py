@@ -113,6 +113,8 @@ class TestImageApi(ApiTestCase):
         self.assert_image_type(response, image_type_sizes[ImageType.header])
         response = self.test_client.get('/os/os-123/i/i-123?image_type=full')
         self.assert_image_type(response, (301, 301))
+        response = self.test_client.get('/os/os-123/i/i-123')
+        self.assert_image_type(response, (301, 301))
 
     def assert_image_type(self, response: Response, size: tuple[int, int]):
         self.assert_response(response, 200)

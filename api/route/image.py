@@ -31,7 +31,7 @@ async def get_os_images(os_identifier: str, only_header: bool = False) -> list[P
 
 @image_router.get('/{image_identifier}')
 async def get_os_image(os_identifier: str, image_identifier: str,
-                       image_type: ImageType = ImageType.thumb,
+                       image_type: ImageType = ImageType.full,
                        response: Response = None):
     persistent_image = PersistentImage(os_identifier, image_identifier)
     if image_registry.has_image(persistent_image):
