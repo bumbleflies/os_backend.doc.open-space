@@ -1,5 +1,8 @@
+from io import BytesIO
 from os import listdir
 from pathlib import Path
+
+from PIL import Image
 
 from api.model.id_gen import generatorFactoryInstance
 from registry.image import image_registry
@@ -99,3 +102,11 @@ class TestImageApi(ApiTestCase):
         response_del2 = self.test_client.delete('/os/123/i/345')
         self.assert_response(response_del2, 204)
         self.assertFalse(Path('img').joinpath('123').exists())
+
+    def test_get_image_thumbnail(self):
+        self.upload_os_image()
+        response = self.test_client.get('/os/os-123/i/i-123?thumbnail=true')
+        self.assert_response(response, 200)
+        with Image.open(BytesIO(response.content)) as image:
+            self.assertEqual('PNG', image.format)
+            self.assertEqual((128, 128), image.size)

@@ -30,10 +30,14 @@ async def get_os_images(os_identifier: str, only_header: bool = False) -> list[P
 
 
 @image_router.get('/{image_identifier}')
-async def get_os_image(os_identifier: str, image_identifier: str, response: Response):
+async def get_os_image(os_identifier: str, image_identifier: str, thumbnail: bool = False, response: Response = None):
     persistent_image = PersistentImage(os_identifier, image_identifier)
     if image_registry.has_image(persistent_image):
-        return FileResponse(image_storage.get(persistent_image))
+        if thumbnail:
+            image_file = FileResponse(image_storage.get_thumb(persistent_image))
+        else:
+            image_file = FileResponse(image_storage.get(persistent_image))
+        return image_file
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
         return ErrorMessage('Invalid Image Identifier')
