@@ -1,6 +1,9 @@
+import asyncio
+from asyncio import Task
 from os import listdir
 from pathlib import Path
 
+from PIL import Image
 from fastapi import UploadFile
 
 from api.model.image_data import PersistentImage
@@ -10,13 +13,14 @@ class ImageStore:
     def __init__(self, path='img'):
         self._image_storage = Path(path)
 
-    async def save(self, image: UploadFile, persistent_image: PersistentImage):
+    async def save(self, image: UploadFile, persistent_image: PersistentImage) -> Task[None]:
         os_path = self.image_dir(persistent_image)
         if not os_path.exists():
             os_path.mkdir()
         with os_path.joinpath(persistent_image.identifier) as image_file:
             image_file.write_bytes(await image.read())
-        return persistent_image
+
+        return asyncio.create_task(self.create_thumbnail(image_file))
 
     def load(self, os_identifier: str) -> list[PersistentImage]:
         os_image_path = self.storage_path.joinpath(os_identifier)
@@ -48,6 +52,11 @@ class ImageStore:
 
     def image_dir(self, persistent_image: PersistentImage):
         return self.storage_path.joinpath(persistent_image.os_identifier)
+
+    async def create_thumbnail(self, image: Path, size=(128, 128)) -> None:
+        with Image.open(image) as im:
+            im.thumbnail(size)
+            return im.save(image.parent.joinpath(f'{image.name}.thumb'), "PNG")
 
 
 image_storage: ImageStore = ImageStore()
