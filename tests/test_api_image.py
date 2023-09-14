@@ -6,7 +6,7 @@ from PIL import Image
 
 from api.model.id_gen import generatorFactoryInstance
 from registry.image import image_registry
-from store.image import image_storage
+from store.image import image_storage, THUMBNAIL_SIZE
 from tests import ApiTestCase
 
 
@@ -109,4 +109,4 @@ class TestImageApi(ApiTestCase):
         self.assert_response(response, 200)
         with Image.open(BytesIO(response.content)) as image:
             self.assertEqual('PNG', image.format)
-            self.assertEqual((128, 128), image.size)
+            self.assertEqual(THUMBNAIL_SIZE, image.size)

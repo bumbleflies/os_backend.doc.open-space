@@ -10,6 +10,7 @@ from api.model.session_data import SessionData
 from api.routes import app
 from registry.session import session_registry
 from registry.session_images import session_images_registry
+from store.image import THUMBNAIL_SIZE
 from tests import ApiTestCase
 
 
@@ -107,4 +108,4 @@ class TestSessionImagesApi(ApiTestCase):
         self.assert_response(response, 200)
         with Image.open(BytesIO(response.content)) as image:
             self.assertEqual('PNG', image.format)
-            self.assertEqual((128, 128), image.size)
+            self.assertEqual(THUMBNAIL_SIZE, image.size)

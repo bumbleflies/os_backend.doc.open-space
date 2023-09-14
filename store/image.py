@@ -8,6 +8,8 @@ from fastapi import UploadFile
 
 from api.model.image_data import PersistentImage
 
+THUMBNAIL_SIZE = (150, 150)
+
 
 class ImageStore:
     def __init__(self, path='img'):
@@ -50,7 +52,7 @@ class ImageStore:
     def image_dir(self, persistent_image: PersistentImage):
         return self.storage_path.joinpath(persistent_image.os_identifier)
 
-    async def create_thumbnail(self, image: PersistentImage, size=(128, 128)) -> None:
+    async def create_thumbnail(self, image: PersistentImage, size=THUMBNAIL_SIZE) -> None:
         image_file = self.image_dir(image).joinpath(image.name)
         with Image.open(image_file) as im:
             im.thumbnail(size)
