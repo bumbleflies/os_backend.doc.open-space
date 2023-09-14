@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 from fastapi.testclient import TestClient
 
-from api.model.id_gen import generatorFactoryInstance
 from api.routes import app
 from registry.os import os_registry
 from tests import ApiTestCase
@@ -13,8 +12,6 @@ class TestOsApi(ApiTestCase):
     def setUp(self) -> None:
         super().setUp()
         os_registry.deleteAll()
-        self.test_id = '123'
-        generatorFactoryInstance.generator_function = lambda: self.test_id
         self.test_client = TestClient(app)
 
         self.start_date = datetime(2023, 3, 4, 5, 6, 7)
@@ -35,13 +32,13 @@ class TestOsApi(ApiTestCase):
         self.assertDictEqual({
             'title': 'test title',
             'end_date': (self.start_date + timedelta(days=1)).isoformat(),
-            'identifier': '123',
+            'identifier': response.json()['identifier'],
             'location': {'lat': 1.0, 'lng': 2.0},
             'start_date': self.start_date.isoformat(),
         }, response.json())
 
     def test_get_all_os(self):
-        self.test_client.post('/os', json=self.test_os)
+        create_response = self.test_client.post('/os', json=self.test_os)
 
         response = self.test_client.get('/os')
         self.assert_response(response, 200)
@@ -51,7 +48,7 @@ class TestOsApi(ApiTestCase):
         self.assertDictEqual({
             'title': 'test title',
             'end_date': (self.start_date + timedelta(days=1)).isoformat(),
-            'identifier': '123',
+            'identifier': create_response.json()['identifier'],
             'location': {'lat': 1.0, 'lng': 2.0},
             'start_date': self.start_date.isoformat(),
         }, response.json()[0])
@@ -65,7 +62,7 @@ class TestOsApi(ApiTestCase):
         self.assertDictEqual({
             'title': 'test title',
             'end_date': (self.start_date + timedelta(days=1)).isoformat(),
-            'identifier': '123',
+            'identifier': create_response.json()['identifier'],
             'location': {'lat': 1.0, 'lng': 2.0},
             'start_date': self.start_date.isoformat(),
         }, os_response.json())
@@ -90,7 +87,7 @@ class TestOsApi(ApiTestCase):
         self.assertDictEqual({
             'title': 'new title',
             'end_date': (self.start_date + timedelta(days=1)).isoformat(),
-            'identifier': '123',
+            'identifier': os_id,
             'location': {'lat': 1.0, 'lng': 2.0},
             'start_date': self.start_date.isoformat(),
         }, put_response.json())
@@ -101,8 +98,7 @@ class TestOsApi(ApiTestCase):
     def test_get_os_with_header_image(self):
         create_response = self.test_client.post('/os', json=self.test_os)
         os_id = create_response.json()['identifier']
-        upload_response = self.upload_os_image(os_identifier=os_id)
-        image_id = upload_response.json()['identifier']
+        image_id = self.upload_os_image(os_identifier=os_id)
         patch_response = self.test_client.patch(f'/os/{os_id}/i/{image_id}', json={'is_header': True})
         self.assert_response(patch_response, 204)
         os_response = self.test_client.get(f'/os/{os_id}?with_header_images=true')
@@ -111,10 +107,10 @@ class TestOsApi(ApiTestCase):
         self.assertDictEqual({
             'title': 'test title',
             'end_date': (self.start_date + timedelta(days=1)).isoformat(),
-            'identifier': '123',
+            'identifier': os_id,
             'location': {'lat': 1.0, 'lng': 2.0},
             'start_date': self.start_date.isoformat(),
-            'header_images': [{'identifier': 'i-123',
+            'header_images': [{'identifier': image_id,
                                'is_header': True,
-                               'os_identifier': '123'}]
+                               'os_identifier': os_id}]
         }, os_response.json())

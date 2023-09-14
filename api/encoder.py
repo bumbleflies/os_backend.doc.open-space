@@ -4,6 +4,7 @@ from datetime import datetime
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, o):
+        super()
         if isinstance(o, datetime):
             return o.isoformat()
 

@@ -11,16 +11,16 @@ class PersistentImage:
     is_header: bool = False
 
     @property
-    def thumb_name(self):
+    def thumb_name(self) -> str:
         return f'{self.identifier}.thumb'
 
     @property
-    def header_name(self):
+    def header_name(self) -> str:
         return f'{self.identifier}.header'
 
     @property
-    def full_name(self):
-        return self.identifier
+    def full_name(self) -> str:
+        return str(self.identifier)
 
 
 @dataclass(kw_only=True)

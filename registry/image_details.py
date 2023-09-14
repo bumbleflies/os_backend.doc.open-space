@@ -15,7 +15,7 @@ class ImageDetailsJsonDatabase(JsonDatabase):
         self.file_store.mkdir(exist_ok=True)
         super().__init__(str(self.file_store.joinpath('impression_details.json')), 'id')
 
-    def add_details(self, image_details: ImageDetails):
+    def add_details(self, image_details: ImageDetails) -> None:
         self.add(asdict(image_details))
 
     def update_image_details(self, image_details: ImageDetails):
