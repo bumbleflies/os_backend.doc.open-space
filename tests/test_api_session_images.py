@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
+from io import BytesIO
 from pathlib import Path
 
+from PIL import Image
 from fastapi.testclient import TestClient
 
 from api.model.id_gen import generatorFactoryInstance
@@ -98,3 +100,11 @@ class TestSessionImagesApi(ApiTestCase):
         response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i?only_header=True')
         self.assert_response(response)
         self.assertEqual(1, len(response.json()), response.json())
+
+    def test_get_image_thumbnail(self):
+        self.upload_session_image(s_identifier=self.test_id, i_identifier='i-123')
+        response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/i-123?thumbnail=true')
+        self.assert_response(response, 200)
+        with Image.open(BytesIO(response.content)) as image:
+            self.assertEqual('PNG', image.format)
+            self.assertEqual((128, 128), image.size)
