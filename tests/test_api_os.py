@@ -114,3 +114,20 @@ class TestOsApi(ApiTestCase):
                                'is_header': True,
                                'os_identifier': os_id}]
         }, os_response.json())
+
+    def test_put_os_with_place(self):
+        response = self.test_client.post('/os', json=self.test_os)
+        os_id = response.json()['identifier']
+        test_os_2 = dict(self.test_os)
+        test_os_2['location'] = {'lat': 1.0, 'lng': 2.0, 'place': 'test place'}
+
+        put_response = self.test_client.put(f'/os/{os_id}', json=test_os_2)
+
+        self.assert_response(put_response, 200)
+        self.assertDictEqual({
+            'title': 'test title',
+            'end_date': (self.start_date + timedelta(days=1)).isoformat(),
+            'identifier': os_id,
+            'location': {'lat': 1.0, 'lng': 2.0, 'place': 'test place'},
+            'start_date': self.start_date.isoformat(),
+        }, put_response.json())
