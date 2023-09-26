@@ -20,6 +20,10 @@ class TestAuthentication(TestCase):
     def test_make_authenticated_call(self):
         self.test_client = TestClient(app)
 
+        self.assertIsNotNone(getenv('OS_AUTH_DOMAIN'))
+        self.assertIsNotNone(getenv('OS_AUTH_TEST_CLIENT_ID'))
+        self.assertIsNotNone(getenv('OS_AUTH_TEST_CLIENT_SECRET'))
+
         response = self.test_client.get('/auth', headers=get_authorization_header())
         self.assertEqual(200, response.status_code, response.content)
 
