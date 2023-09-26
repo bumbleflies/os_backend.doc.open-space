@@ -1,3 +1,4 @@
 /img/
 /_registry
 __pycache__
+.env

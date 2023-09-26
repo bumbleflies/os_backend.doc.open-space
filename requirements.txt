@@ -1,8 +1,11 @@
 FastAPI
-uvicorn
-uuid
-dacite
-python-multipart
-pysondb
-more_itertools
-Pillow
+uvicorn             # server
+uuid                # ids
+dacite              # handle dataclasses
+python-multipart    # json
+pysondb             # json database
+more_itertools      # one
+Pillow              # thumbnails
+fastapi-auth0       # auth0 authentication
+auth0-python        # auth0 for testing
+python-dotenv       # .env configuration
