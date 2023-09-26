@@ -23,12 +23,12 @@ async def create_os(osd: TransientOpenSpaceData) -> PersistentOpenSpaceData:
     return os_registry.add_os(os_persistent)
 
 
-@os_router.get('/',response_model_exclude_none=True)
+@os_router.get('/', response_model_exclude_none=True)
 async def get_open_spaces() -> list[PersistentOpenSpaceData]:
     return os_registry.get_all_os()
 
 
-@os_router.get('/{identifier}',response_model_exclude_none=True)
+@os_router.get('/{identifier}', response_model_exclude_none=True)
 def get_open_space(identifier: str, with_header_images: bool = False,
                    response: Response = None) -> (PersistentOpenSpaceData |
                                                   PersistentOpenSpaceDataWithHeader |
@@ -52,7 +52,7 @@ async def delete_open_space(identifier: str):
         session_registry.delete_by_identifier(session.identifier)
 
 
-@os_router.put('/{identifier}',response_model_exclude_none=True)
+@os_router.put('/{identifier}', response_model_exclude_none=True)
 async def update_open_space(identifier: str, osd: TransientOpenSpaceData,
                             response: Response) -> PersistentOpenSpaceData | ErrorMessage:
     os_persistent = PersistentOpenSpaceData.from_data(osd)

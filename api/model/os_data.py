@@ -12,7 +12,7 @@ from api.model.image_data import PersistentImage, WithHeaderImages
 class Location:
     lat: float
     lng: float
-    place: Optional[str]=None
+    place: Optional[str] = None
 
 
 @dataclass
