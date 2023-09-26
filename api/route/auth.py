@@ -24,7 +24,7 @@ def get_auth(user: Auth0User = Security(auth.get_user)):
 
 
 @auth_router.get('/token')
-def get_auth(email: str, password: str):
+def get_access_token(email: str, password: str):
     get_token = GetToken(os.getenv('OS_AUTH_DOMAIN'), os.getenv('OS_AUTH_TEST_CLIENT_ID'),
                          client_secret=os.getenv('OS_AUTH_TEST_CLIENT_SECRET'))
     token = get_token.login(email, password,
