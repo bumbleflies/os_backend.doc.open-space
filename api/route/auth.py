@@ -5,6 +5,10 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Security
 from fastapi import Depends
 from fastapi_auth0 import Auth0, Auth0User
+from starlette import status
+from starlette.responses import Response
+
+from api.model.error import ErrorMessage
 
 load_dotenv()
 assert os.getenv('OS_AUTH_DOMAIN')
@@ -24,9 +28,11 @@ def get_auth(user: Auth0User = Security(auth.get_user)):
 
 
 @auth_router.get('/token')
-def get_access_token(email: str, password: str):
-    assert os.getenv('OS_AUTH_TEST_CLIENT_ID')
-    assert os.getenv('OS_AUTH_TEST_CLIENT_SECRET')
+def get_access_token(email: str, password: str, response: Response):
+    if not (os.getenv('OS_AUTH_TEST_CLIENT_ID') and os.getenv('OS_AUTH_TEST_CLIENT_SECRET')):
+        response.status_code = status.HTTP_405_METHOD_NOT_ALLOWED
+        return ErrorMessage('Only available during testing')
+
     get_token = GetToken(os.getenv('OS_AUTH_DOMAIN'), os.getenv('OS_AUTH_TEST_CLIENT_ID'),
                          client_secret=os.getenv('OS_AUTH_TEST_CLIENT_SECRET'))
     token = get_token.login(email, password,
