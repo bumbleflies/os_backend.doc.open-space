@@ -40,3 +40,12 @@ jobs:
       - name: Test with pytest
         run: |
           python -m pytest tests/
+        env:
+          OS_AUTH_DOMAIN=${{ env.OS_AUTH_DOMAIN }}
+          OS_AUTH_AUDIENCE=${{ env.OS_AUTH_AUDIENCE }}
+          OS_AUTH_TEST_CLIENT_ID=${{ env.OS_AUTH_TEST_CLIENT_ID }}
+          OS_AUTH_TEST_CLIENT_SECRET=${{ env.OS_AUTH_TEST_CLIENT_SECRET }}
+          OS_AUTH_TEST_USER_EMAIL=${{ env.OS_AUTH_TEST_USER_EMAIL }}
+          OS_AUTH_TEST_USER_PASSWORD=${{ env.OS_AUTH_TEST_USER_PASSWORD }}
+
+
