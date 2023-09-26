@@ -5,10 +5,10 @@ from registry.image_details import image_details_registry
 from registry.os import os_registry
 from registry.session import session_registry
 from registry.session_images import session_images_registry
-from tests import ApiTestCase
+from tests import AuthEnabledApiTestCase
 
 
-class TestIntegrationApi(ApiTestCase):
+class TestIntegrationApi(AuthEnabledApiTestCase):
 
     def setUp(self) -> None:
         super().setUp()
@@ -30,7 +30,7 @@ class TestIntegrationApi(ApiTestCase):
         }
 
     def test_deletes_session_when_os_is_deleted(self):
-        os_create_response = self.test_client.post('/os/', json=self.test_os)
+        os_create_response = self.auth_test_client.post('/os/', json=self.test_os)
         self.assert_response(os_create_response, 201)
 
         os_id = os_create_response.json()['identifier']

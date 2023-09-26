@@ -10,7 +10,7 @@ class TestAuthentication(AuthEnabledApiTestCase):
         self.assertIsNotNone(getenv('OS_AUTH_TEST_CLIENT_ID'))
         self.assertIsNotNone(getenv('OS_AUTH_TEST_CLIENT_SECRET'))
 
-        response = self.with_authenticated_test_client().get('/auth')
+        response = self.auth_test_client.get('/auth')
         self.assertEqual(200, response.status_code, response.content)
 
         self.assertIn('permissions', response.json())

@@ -9,8 +9,7 @@ load_dotenv()
 assert os.getenv('OS_AUTH_DOMAIN')
 assert os.getenv('OS_AUTH_AUDIENCE')
 
-auth = Auth0(domain=os.getenv('OS_AUTH_DOMAIN'), api_audience=os.getenv('OS_AUTH_AUDIENCE'),
-             scopes={'create:os': ''})
+auth = Auth0(domain=os.getenv('OS_AUTH_DOMAIN'), api_audience=os.getenv('OS_AUTH_AUDIENCE'))
 
 auth_router = APIRouter(
     prefix='/auth',

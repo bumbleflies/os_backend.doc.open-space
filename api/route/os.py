@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Security
+from fastapi_auth0 import Auth0User
 from more_itertools import one
 from pysondb.errors import DataNotFoundError
 from starlette import status
@@ -7,6 +8,7 @@ from starlette.responses import Response
 from api.model.error import ErrorMessage
 from api.model.os_data import TransientOpenSpaceData, PersistentOpenSpaceData, PersistentOpenSpaceDataWithHeader, \
     dict_to_os_data
+from api.route.auth import auth
 from registry.image import image_registry
 from registry.os import os_registry
 from registry.session import session_registry
@@ -17,8 +19,9 @@ os_router = APIRouter(
 )
 
 
-@os_router.post('/', status_code=status.HTTP_201_CREATED, response_model_exclude_none=True)
-async def create_os(osd: TransientOpenSpaceData) -> PersistentOpenSpaceData:
+@os_router.post('/', status_code=status.HTTP_201_CREATED, response_model_exclude_none=True,
+                dependencies=[Depends(auth.authcode_scheme)])
+async def create_os(osd: TransientOpenSpaceData, user: Auth0User = Security(auth.get_user)) -> PersistentOpenSpaceData:
     os_persistent = PersistentOpenSpaceData.from_data(osd)
     return os_registry.add_os(os_persistent)
 

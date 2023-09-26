@@ -36,17 +36,21 @@ class ApiTestCase(TestCase):
 
 
 class AuthEnabledApiTestCase(ApiTestCase):
+    auth_headers = {}
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        get_token = GetToken(getenv('OS_AUTH_DOMAIN'), getenv('OS_AUTH_TEST_CLIENT_ID'),
+                             client_secret=getenv('OS_AUTH_TEST_CLIENT_SECRET'))
+        token = get_token.login(getenv('OS_AUTH_TEST_USER_EMAIL'),
+                                getenv('OS_AUTH_TEST_USER_PASSWORD'),
+                                scope='create:os',
+                                realm='Username-Password-Authentication',
+                                audience=getenv('OS_AUTH_AUDIENCE'))
+        AuthEnabledApiTestCase.auth_headers = {'Authorization': f'Bearer {token["access_token"]}'}
 
     def setUp(self):
         super().setUp()
-        get_token = GetToken(getenv('OS_AUTH_DOMAIN'), getenv('OS_AUTH_TEST_CLIENT_ID'),
-                             client_secret=getenv('OS_AUTH_TEST_CLIENT_SECRET'))
-        token = get_token.login(getenv('OS_AUTH_TEST_USER_EMAIL'), getenv('OS_AUTH_TEST_USER_PASSWORD'),
-                                realm='Username-Password-Authentication', audience=getenv('OS_AUTH_AUDIENCE'))
-
-        self.auth_headers = {'Authorization': f'Bearer {token["access_token"]}'}
-
-    def with_authenticated_test_client(self):
-        test_client = TestClient(app)
-        test_client.headers = self.auth_headers
-        return test_client
+        self.auth_test_client = TestClient(app)
+        self.auth_test_client.headers = AuthEnabledApiTestCase.auth_headers
