@@ -1,8 +1,5 @@
 from datetime import datetime, timedelta
 
-from starlette.testclient import TestClient
-
-from api.routes import app
 from registry.image import image_registry
 from registry.image_details import image_details_registry
 from registry.os import os_registry
@@ -14,7 +11,7 @@ from tests import ApiTestCase
 class TestIntegrationApi(ApiTestCase):
 
     def setUp(self) -> None:
-        self.test_client = TestClient(app)
+        super().setUp()
         os_registry.deleteAll()
         image_registry.deleteAll()
         image_details_registry.deleteAll()

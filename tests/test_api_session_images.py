@@ -1,14 +1,11 @@
 from datetime import datetime, timedelta
 from io import BytesIO
-from pathlib import Path
 
 from PIL import Image
-from fastapi.testclient import TestClient
 
 from api.model.id_gen import generatorFactoryInstance
 from api.model.image_data import ImageType, image_type_sizes
 from api.model.session_data import SessionData
-from api.routes import app
 from registry.session import session_registry
 from registry.session_images import session_images_registry
 from tests import ApiTestCase
@@ -17,7 +14,7 @@ from tests import ApiTestCase
 class TestSessionImagesApi(ApiTestCase):
 
     def setUp(self) -> None:
-        self.test_client = TestClient(app)
+        super().setUp()
         self.start_date = datetime(2023, 3, 4, 5, 6, 7)
         self.test_id = '345'
         generatorFactoryInstance.generator_function = lambda: self.test_id
@@ -25,7 +22,6 @@ class TestSessionImagesApi(ApiTestCase):
         session_images_registry.deleteAll()
         session_registry.add_session(
             SessionData('Test Session', self.start_date, self.start_date + timedelta(hours=1), 'os-123'))
-        self.fixture_image = Path('tests').joinpath('fixtures/test-image.png')
 
     def test_add_os_session_image(self):
         response = self.upload_session_image(s_identifier=self.test_id)

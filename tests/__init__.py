@@ -1,6 +1,8 @@
+from os import getenv
 from pathlib import Path
 from unittest import TestCase
 
+from auth0.authentication import GetToken
 from httpx import Response
 from starlette.testclient import TestClient
 
@@ -31,3 +33,20 @@ class ApiTestCase(TestCase):
                                                      files={'image': image_file})
         self.assert_response(test_client_post, 201)
         return test_client_post
+
+
+class AuthEnabledApiTestCase(ApiTestCase):
+
+    def setUp(self):
+        super().setUp()
+        get_token = GetToken(getenv('OS_AUTH_DOMAIN'), getenv('OS_AUTH_TEST_CLIENT_ID'),
+                             client_secret=getenv('OS_AUTH_TEST_CLIENT_SECRET'))
+        token = get_token.login(getenv('OS_AUTH_TEST_USER_EMAIL'), getenv('OS_AUTH_TEST_USER_PASSWORD'),
+                                realm='Username-Password-Authentication', audience=getenv('OS_AUTH_AUDIENCE'))
+
+        self.auth_headers = {'Authorization': f'Bearer {token["access_token"]}'}
+
+    def with_authenticated_test_client(self):
+        test_client = TestClient(app)
+        test_client.headers = self.auth_headers
+        return test_client

@@ -1,8 +1,3 @@
-from pathlib import Path
-
-from fastapi.testclient import TestClient
-
-from api.routes import app
 from registry.image_details import image_details_registry
 from tests import ApiTestCase
 
@@ -11,9 +6,7 @@ class TestImageDetailsApi(ApiTestCase):
 
     def setUp(self) -> None:
         super().setUp()
-        self.test_client = TestClient(app)
         image_details_registry.deleteAll()
-        self.fixture_image = Path('tests').joinpath('fixtures/test-image.png')
 
     def test_add_image_description(self):
         patch_response = self.test_client.put('/os/os-123/i/i-123/details', json={'description': 'test-description'})

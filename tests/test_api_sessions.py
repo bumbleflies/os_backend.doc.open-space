@@ -1,9 +1,6 @@
 from datetime import datetime, timedelta
 
-from fastapi.testclient import TestClient
-
 from api.model.id_gen import generatorFactoryInstance
-from api.routes import app
 from registry.session import session_registry
 from registry.session_images import session_images_registry
 from tests import ApiTestCase
@@ -13,7 +10,6 @@ class TestSessionApi(ApiTestCase):
 
     def setUp(self) -> None:
         super().setUp()
-        self.test_client = TestClient(app)
         self.start_date = datetime(2023, 3, 4, 5, 6, 7)
         self.test_id = '345'
         generatorFactoryInstance.generator_function = lambda: self.test_id

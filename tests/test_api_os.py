@@ -1,8 +1,5 @@
 from datetime import datetime, timedelta
 
-from fastapi.testclient import TestClient
-
-from api.routes import app
 from registry.os import os_registry
 from tests import ApiTestCase
 
@@ -12,7 +9,6 @@ class TestOsApi(ApiTestCase):
     def setUp(self) -> None:
         super().setUp()
         os_registry.deleteAll()
-        self.test_client = TestClient(app)
 
         self.start_date = datetime(2023, 3, 4, 5, 6, 7)
         self.test_os = {
