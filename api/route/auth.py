@@ -18,6 +18,6 @@ auth_router = APIRouter(
 )
 
 
-@auth_router.get('', dependencies=[Depends(auth.implicit_scheme)])
+@auth_router.get('', dependencies=[Depends(auth.authcode_scheme)])
 def get_auth(user: Auth0User = Security(auth.get_user)):
     return user
