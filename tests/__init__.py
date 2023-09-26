@@ -45,7 +45,6 @@ class AuthEnabledApiTestCase(ApiTestCase):
                              client_secret=getenv('OS_AUTH_TEST_CLIENT_SECRET'))
         token = get_token.login(getenv('OS_AUTH_TEST_USER_EMAIL'),
                                 getenv('OS_AUTH_TEST_USER_PASSWORD'),
-                                scope='create:os',
                                 realm='Username-Password-Authentication',
                                 audience=getenv('OS_AUTH_AUDIENCE'))
         AuthEnabledApiTestCase.auth_headers = {'Authorization': f'Bearer {token["access_token"]}'}

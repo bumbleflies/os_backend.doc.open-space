@@ -1,5 +1,6 @@
 import os
 
+from auth0.authentication import GetToken
 from dotenv import load_dotenv
 from fastapi import APIRouter, Security
 from fastapi import Depends
@@ -20,3 +21,13 @@ auth_router = APIRouter(
 @auth_router.get('', dependencies=[Depends(auth.authcode_scheme)])
 def get_auth(user: Auth0User = Security(auth.get_user)):
     return user
+
+
+@auth_router.get('/token')
+def get_auth(email: str, password: str):
+    get_token = GetToken(os.getenv('OS_AUTH_DOMAIN'), os.getenv('OS_AUTH_TEST_CLIENT_ID'),
+                         client_secret=os.getenv('OS_AUTH_TEST_CLIENT_SECRET'))
+    token = get_token.login(email, password,
+                            realm='Username-Password-Authentication',
+                            audience=os.getenv('OS_AUTH_AUDIENCE'))
+    return token['access_token']
