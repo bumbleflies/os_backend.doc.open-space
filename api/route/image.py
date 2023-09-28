@@ -21,6 +21,8 @@ async def upload_os_images(os_identifier: str, image: UploadFile) -> PersistentI
     persistent_image = PersistentImage(os_identifier)
     image_registry.add_image(persistent_image)
     (saved_image, _) = await image_storage.save(image, persistent_image)
+    if not image_registry.get_for_os(os_identifier, True):
+        image_registry.make_header(saved_image, HeaderData(True))
     return saved_image
 
 
@@ -55,6 +57,4 @@ async def make_header_image(os_identifier: str, image_identifier: str, header_da
         # only allow one header
         for os_image in image_registry.getByQuery({'os_identifier': os_identifier}):
             image_registry.updateById(os_image.get(image_registry.id_fieldname), {'is_header': False})
-    image_registry.updateById(
-        image_registry.get_image(PersistentImage(os_identifier, image_identifier)).get(image_registry.id_fieldname),
-        asdict(header_data))
+    image_registry.make_header(PersistentImage(os_identifier, image_identifier), header_data)

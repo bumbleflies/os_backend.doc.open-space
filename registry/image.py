@@ -6,7 +6,7 @@ from dacite import from_dict
 from more_itertools import one
 from pysondb.db import JsonDatabase
 
-from api.model.image_data import PersistentImage
+from api.model.image_data import PersistentImage, HeaderData
 
 
 def dict_to_image_data(img):
@@ -50,6 +50,11 @@ class ImageJsonDatabase(JsonDatabase):
 
     def query_image(self, image: PersistentImage) -> list[dict[str, Any]]:
         return self.getByQuery({'os_identifier': image.os_identifier, 'identifier': image.identifier})
+
+    def make_header(self, image: PersistentImage, header_data: HeaderData):
+        self.updateById(
+            self.get_image(image).get(image_registry.id_fieldname), asdict(header_data))
+
 
 
 image_registry: ImageJsonDatabase = ImageJsonDatabase()

@@ -44,4 +44,13 @@ class TestIntegrationApi(AuthEnabledApiTestCase):
         self.assertEqual(0, len(session_get_response.json()))
 
     def test_first_impression_becomes_header(self):
-        pass
+        os_registry.add_os(self.test_os)
+        image_id = self.upload_os_image(self.test_os.identifier)
+        response = self.test_client.get(f'/os/{self.test_os.identifier}/i/?only_header=True')
+        self.assert_response(response, 200)
+        self.assertEqual(1, len(response.json()), response.json())
+        self.assertDictEqual({
+            'identifier': image_id,
+            'os_identifier': self.test_os.identifier,
+            'is_header': True,
+        }, response.json()[0], response.json())

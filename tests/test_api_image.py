@@ -40,7 +40,7 @@ class TestImageApi(ApiTestCase):
         self.assertDictEqual({
             'identifier': image_id,
             'os_identifier': self.test_id,
-            'is_header': False,
+            'is_header': True,
         }, response.json()[0], response.json())
 
     def test_delete_os_image(self):
