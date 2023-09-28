@@ -84,6 +84,17 @@ class TestImageApi(ApiTestCase):
         self.assert_response(response, 200)
         self.assertEqual(1, len(response.json()), response.json())
 
+    def test_first_impression_becomes_header(self):
+        image_id = self.upload_os_image(self.test_os.identifier)
+        response = self.test_client.get(f'/os/{self.test_os.identifier}/i/?only_header=True')
+        self.assert_response(response, 200)
+        self.assertEqual(1, len(response.json()), response.json())
+        self.assertDictEqual({
+            'identifier': image_id,
+            'os_identifier': self.test_os.identifier,
+            'is_header': True,
+        }, response.json()[0], response.json())
+
     def test_image_dir_is_deleted_when_empty(self):
         with open(self.fixture_image, 'rb') as image_file:
             response1 = self.test_client.post(f'/os/{self.test_id}/i/', files={'image': image_file})

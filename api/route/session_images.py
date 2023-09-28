@@ -21,6 +21,10 @@ async def add_session_image(os_identifier: str, session_identifier: str, image: 
         session_image = SessionImage(session_identifier=session_identifier, os_identifier=os_identifier)
         session_images_registry.add_session_image(session_image)
         await image_storage.save(image, session_image)
+
+        if not session_images_registry.get_for_session(os_identifier, session_identifier, True):
+            session_images_registry.update_header(session_image, HeaderData(True))
+
         return session_image
     else:
         response.status_code = status.HTTP_404_NOT_FOUND

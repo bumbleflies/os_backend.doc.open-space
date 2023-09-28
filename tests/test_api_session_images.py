@@ -45,7 +45,7 @@ class TestSessionImagesApi(ApiTestCase):
         self.assertDictEqual({
             'identifier': 'i-123',
             'os_identifier': 'os-123',
-            'is_header': False,
+            'is_header': True,
             'session_identifier': '345'
         }, get_response.json()[0], get_response.json())
 
@@ -97,6 +97,18 @@ class TestSessionImagesApi(ApiTestCase):
         response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i?only_header=True')
         self.assert_response(response)
         self.assertEqual(1, len(response.json()), response.json())
+
+    def test_first_image_becomes_header(self):
+        self.upload_session_image(s_identifier=self.test_id, i_identifier='i-123')
+        response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/?only_header=True')
+        self.assert_response(response)
+        self.assertEqual(1,len(response.json()), response.json())
+        self.assertDictEqual({
+            'identifier': 'i-123',
+            'os_identifier': 'os-123',
+            'session_identifier': '345',
+            'is_header': True,
+        }, response.json()[0], response.json())
 
     def test_get_image_thumbnail(self):
         self.upload_session_image(s_identifier=self.test_id, i_identifier='i-123')
