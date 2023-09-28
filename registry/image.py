@@ -56,5 +56,4 @@ class ImageJsonDatabase(JsonDatabase):
             self.get_image(image).get(image_registry.id_fieldname), asdict(header_data))
 
 
-
 image_registry: ImageJsonDatabase = ImageJsonDatabase()

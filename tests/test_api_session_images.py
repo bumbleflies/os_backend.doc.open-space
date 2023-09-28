@@ -102,7 +102,7 @@ class TestSessionImagesApi(ApiTestCase):
         self.upload_session_image(s_identifier=self.test_id, i_identifier='i-123')
         response = self.test_client.get(f'/os/os-123/s/{self.test_id}/i/?only_header=True')
         self.assert_response(response)
-        self.assertEqual(1,len(response.json()), response.json())
+        self.assertEqual(1, len(response.json()), response.json())
         self.assertDictEqual({
             'identifier': 'i-123',
             'os_identifier': 'os-123',
