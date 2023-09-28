@@ -26,7 +26,7 @@ async def create_os(osd: TransientOpenSpaceData, user: Auth0User = Security(auth
     return os_registry.add_os(os_persistent)
 
 
-@os_router.get('/', response_model_exclude_none=True)
+@os_router.get('/', response_model_exclude_none=True, response_model_exclude_unset=True)
 async def get_open_spaces() -> list[PersistentOpenSpaceData]:
     return os_registry.get_all_os()
 

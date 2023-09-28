@@ -19,10 +19,6 @@ class TestIntegrationApi(AuthEnabledApiTestCase):
         session_images_registry.deleteAll()
 
         self.start_date = datetime(2023, 3, 4, 5, 6, 7)
-        self.test_os = {
-            'title': 'test title', 'start_date': self.start_date.isoformat(),
-            'end_date': (self.start_date + timedelta(days=1)).isoformat(),
-            'location': {'lat': 1, 'lng': 2}}
         self.test_session = {
             'title': 'Test Session',
             'start_date': self.start_date.isoformat(),
@@ -30,10 +26,8 @@ class TestIntegrationApi(AuthEnabledApiTestCase):
         }
 
     def test_deletes_session_when_os_is_deleted(self):
-        os_create_response = self.auth_test_client.post('/os/', json=self.test_os)
-        self.assert_response(os_create_response, 201)
-
-        os_id = os_create_response.json()['identifier']
+        os_registry.add_os(self.test_os)
+        os_id = self.test_os.identifier
 
         session_create_response = self.test_client.post(f'/os/{os_id}/s', json=self.test_session)
         self.assert_response(session_create_response, 201)
@@ -48,3 +42,6 @@ class TestIntegrationApi(AuthEnabledApiTestCase):
         session_get_response = self.test_client.get(f'/os/{os_id}/s')
         self.assert_response(session_get_response, 200)
         self.assertEqual(0, len(session_get_response.json()))
+
+    def test_first_impression_becomes_header(self):
+        pass
