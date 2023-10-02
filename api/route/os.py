@@ -16,6 +16,10 @@ os_router = APIRouter(
 )
 
 
+def get_os(identifier: str):
+    return os_registry.get_os(identifier)
+
+
 @os_router.post('/', status_code=status.HTTP_201_CREATED, response_model_exclude_none=True,
                 dependencies=[Depends(auth.authcode_scheme)])
 async def create_os(osd: TransientOpenSpaceData, user: Auth0User = Depends(auth.get_user)) -> PersistentOpenSpaceData:
@@ -38,10 +42,6 @@ def get_open_space(identifier: str, with_header_images: bool = False,
         response.status_code = status.HTTP_404_NOT_FOUND
         return ErrorMessage('Invalid OpenSpace Identifier')
     return os
-
-
-def get_os(identifier: str):
-    return os_registry.get_os(identifier)
 
 
 @os_router.delete('/{identifier}', status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(auth.authcode_scheme)])

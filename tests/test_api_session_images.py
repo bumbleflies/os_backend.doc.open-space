@@ -3,25 +3,24 @@ from io import BytesIO
 
 from PIL import Image
 
-from api.model.id_gen import generatorFactoryInstance
 from api.model.image_data import ImageType, image_type_sizes
 from api.model.session_data import SessionData
 from registry.session import session_registry
 from registry.session_images import session_images_registry
-from tests import ApiTestCase
+from tests import AuthEnabledApiTestCase
 
 
-class TestSessionImagesApi(ApiTestCase):
+class TestSessionImagesApi(AuthEnabledApiTestCase):
 
     def setUp(self) -> None:
         super().setUp()
         self.start_date = datetime(2023, 3, 4, 5, 6, 7)
-        self.test_id = '345'
-        generatorFactoryInstance.generator_function = lambda: self.test_id
         session_registry.deleteAll()
         session_images_registry.deleteAll()
-        session_registry.add_session(
-            SessionData('Test Session', self.start_date, self.start_date + timedelta(hours=1), 'os-123'))
+        self.test_session = SessionData('Test Session', self.start_date, self.start_date + timedelta(hours=1), 'os-123',
+                                        self.user_id)
+        session_registry.add_session(self.test_session)
+        self.test_id = self.test_session.identifier
 
     def test_add_os_session_image(self):
         response = self.upload_session_image(s_identifier=self.test_id)
@@ -46,7 +45,7 @@ class TestSessionImagesApi(ApiTestCase):
             'identifier': 'i-123',
             'os_identifier': 'os-123',
             'is_header': True,
-            'session_identifier': '345'
+            'session_identifier': self.test_id
         }, get_response.json()[0], get_response.json())
 
     def test_get_os_session_image(self):
@@ -83,7 +82,7 @@ class TestSessionImagesApi(ApiTestCase):
         self.assertDictEqual({
             'identifier': 'i-123',
             'os_identifier': 'os-123',
-            'session_identifier': '345',
+            'session_identifier': self.test_id,
             'is_header': True,
         }, response.json()[0], response.json())
 
@@ -106,7 +105,7 @@ class TestSessionImagesApi(ApiTestCase):
         self.assertDictEqual({
             'identifier': 'i-123',
             'os_identifier': 'os-123',
-            'session_identifier': '345',
+            'session_identifier': self.test_id,
             'is_header': True,
         }, response.json()[0], response.json())
 

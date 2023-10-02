@@ -1,9 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from fastapi_auth0 import Auth0User
 from starlette import status
 from starlette.responses import Response
 
 from api.model.error import ErrorMessage
 from api.model.session_data import SessionData, TransientSessionData, SessionDataWithHeader
+from api.route.auth import auth, Permission
 from registry.session import session_registry
 from registry.session_images import session_images_registry
 
@@ -14,8 +16,9 @@ session_router = APIRouter(
 
 
 @session_router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_session(os_identifier: str, session: TransientSessionData) -> SessionData:
-    persistent_session = SessionData.from_transient(os_identifier, session)
+async def add_session(os_identifier: str, session: TransientSessionData,
+                      user: Auth0User = Depends(auth.get_user)) -> SessionData:
+    persistent_session = SessionData.from_transient(os_identifier, session, user.id)
     session_registry.add_session(persistent_session)
     return persistent_session
 
@@ -56,5 +59,5 @@ async def get_session(os_identifier: str, session_identifier: str, response: Res
 
 
 @session_router.delete('/{session_identifier}', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_session(os_identifier: str, session_identifier: str) -> None:
-    return session_registry.delete_by_identifier(session_identifier)
+async def delete_session(os_identifier: str, session=Permission('delete', get_session)) -> None:
+    return session_registry.delete_by_identifier(session.identifier)
