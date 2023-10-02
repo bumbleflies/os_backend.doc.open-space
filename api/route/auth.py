@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Security
 from fastapi import Depends
 from fastapi_auth0 import Auth0, Auth0User
+from fastapi_permissions import Authenticated, configure_permissions, Everyone
 from starlette import status
 from starlette.responses import Response
 
@@ -20,6 +21,21 @@ auth_router = APIRouter(
     prefix='/auth',
     tags=['auth']
 )
+
+
+def get_active_principals(user: Auth0User = Depends(auth.get_user)):
+    if user:
+        # user is logged in
+        principals = [Everyone, Authenticated]
+        principals.extend(getattr(user, "principals", []))
+        principals.append(f'user:{user.id}')
+    else:
+        # user is not logged in
+        principals = [Everyone]
+    return principals
+
+
+Permission = configure_permissions(get_active_principals)
 
 
 @auth_router.get('', dependencies=[Depends(auth.authcode_scheme)])

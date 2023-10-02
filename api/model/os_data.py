@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Mapping, Any, Optional
 
 from dacite import from_dict, Config
+from fastapi_permissions import Allow, Everyone
 
 from api.model.id_gen import generatorFactoryInstance
 from api.model.image_data import PersistentImage, WithHeaderImages
@@ -25,13 +26,21 @@ class TransientOpenSpaceData:
 
 @dataclass
 class PersistentOpenSpaceData(TransientOpenSpaceData):
+    owner: str
     identifier: str = field(init=False, default_factory=generatorFactoryInstance.instanciator)
 
     @classmethod
-    def from_data(cls, os: TransientOpenSpaceData):
+    def from_data(cls, os: TransientOpenSpaceData, user_id: str):
         return PersistentOpenSpaceData(title=os.title, start_date=os.start_date,
                                        end_date=os.end_date,
-                                       location=os.location)
+                                       location=os.location, owner=user_id)
+
+    def __acl__(self):
+        return [
+            (Allow, Everyone, "view"),
+            (Allow, f'user:{self.owner}', "update"),
+            (Allow, f'user:{self.owner}', "delete"),
+        ]
 
 
 @dataclass

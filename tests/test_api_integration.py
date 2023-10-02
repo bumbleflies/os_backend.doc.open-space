@@ -36,7 +36,7 @@ class TestIntegrationApi(AuthEnabledApiTestCase):
         self.assert_response(session_get_response, 200)
         self.assertEqual(1, len(session_get_response.json()))
 
-        os_delete_response = self.test_client.delete(f'/os/{os_id}')
+        os_delete_response = self.auth_test_client.delete(f'/os/{os_id}')
         self.assert_response(os_delete_response, 204)
 
         session_get_response = self.test_client.get(f'/os/{os_id}/s')

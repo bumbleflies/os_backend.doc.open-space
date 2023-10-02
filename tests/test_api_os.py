@@ -21,6 +21,7 @@ class TestOsApi(AuthEnabledApiTestCase):
 
         self.assertDictEqual({
             'title': 'Test Open Space',
+            'owner': self.user_id,
             'end_date': (self.start_date + timedelta(days=1)).isoformat(),
             'identifier': response.json()['identifier'],
             'location': {'lat': 1.0, 'lng': 2.0},
@@ -37,6 +38,7 @@ class TestOsApi(AuthEnabledApiTestCase):
 
         self.assertDictEqual({
             'title': 'Test Open Space',
+            'owner': self.user_id,
             'end_date': (self.start_date + timedelta(days=1)).isoformat(),
             'identifier': self.test_os.identifier,
             'location': {'lat': 1.0, 'lng': 2.0},
@@ -50,6 +52,7 @@ class TestOsApi(AuthEnabledApiTestCase):
 
         self.assertDictEqual({
             'title': 'Test Open Space',
+            'owner': self.user_id,
             'end_date': (self.start_date + timedelta(days=1)).isoformat(),
             'identifier': self.test_os.identifier,
             'location': {'lat': 1, 'lng': 2},
@@ -61,18 +64,20 @@ class TestOsApi(AuthEnabledApiTestCase):
 
     def test_delete_os(self):
         os_registry.add_os(self.test_os)
-        self.auth_test_client.delete(f'/os/{self.test_os.identifier}')
+        response = self.auth_test_client.delete(f'/os/{self.test_os.identifier}')
+        self.assert_response(response, 204)
 
     def test_put_os(self):
         os_registry.add_os(self.test_os)
         test_os_2 = dict(self.test_os_json)
         test_os_2['title'] = 'new title'
 
-        put_response = self.test_client.put(f'/os/{self.test_os.identifier}', json=test_os_2)
+        put_response = self.auth_test_client.put(f'/os/{self.test_os.identifier}', json=test_os_2)
 
         self.assert_response(put_response, 200)
         self.assertDictEqual({
             'title': 'new title',
+            'owner': self.user_id,
             'end_date': (self.start_date + timedelta(days=1)).isoformat(),
             'identifier': self.test_os.identifier,
             'location': {'lat': 1.0, 'lng': 2.0},
@@ -80,7 +85,7 @@ class TestOsApi(AuthEnabledApiTestCase):
         }, put_response.json())
 
     def test_put_not_found(self):
-        self.assertEqual(404, self.test_client.put('/os/456-not-existing-456', json=self.test_os_json).status_code)
+        self.assertEqual(403, self.auth_test_client.put('/os/456-not-existing-456', json=self.test_os_json).status_code)
 
     def test_get_os_with_header_image(self):
         os_registry.add_os(self.test_os)
@@ -92,6 +97,7 @@ class TestOsApi(AuthEnabledApiTestCase):
 
         self.assertDictEqual({
             'title': 'Test Open Space',
+            'owner': self.user_id,
             'end_date': (self.start_date + timedelta(days=1)).isoformat(),
             'identifier': self.test_os.identifier,
             'location': {'lat': 1.0, 'lng': 2.0},
@@ -106,11 +112,12 @@ class TestOsApi(AuthEnabledApiTestCase):
         test_os_2 = dict(self.test_os_json)
         test_os_2['location'] = {'lat': 1.0, 'lng': 2.0, 'place': 'test place'}
 
-        put_response = self.test_client.put(f'/os/{self.test_os.identifier}', json=test_os_2)
+        put_response = self.auth_test_client.put(f'/os/{self.test_os.identifier}', json=test_os_2)
 
         self.assert_response(put_response, 200)
         self.assertDictEqual({
             'title': 'Test Open Space',
+            'owner': self.user_id,
             'end_date': (self.start_date + timedelta(days=1)).isoformat(),
             'identifier': self.test_os.identifier,
             'location': {'lat': 1.0, 'lng': 2.0, 'place': 'test place'},

@@ -9,3 +9,5 @@ Pillow              # thumbnails
 fastapi-auth0       # auth0 authentication
 auth0-python        # auth0 for testing
 python-dotenv       # .env configuration
+fastapi_permissions # row based permissions
+passlib             # used for row based permissions

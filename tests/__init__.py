@@ -20,11 +20,6 @@ class ApiTestCase(TestCase):
         self.fixture_image = Path('tests').joinpath('fixtures/test-image.png')
         self.test_client = TestClient(app)
         self.start_date = datetime(2023, 3, 4, 5, 6, 7)
-        self.test_os = PersistentOpenSpaceData('Test Open Space', self.start_date,
-                                               self.start_date + timedelta(days=1), Location(1.0, 2.0))
-        self.test_os_json = asdict(self.test_os)
-        self.test_os_json['start_date'] = self.test_os_json['start_date'].isoformat()
-        self.test_os_json['end_date'] = self.test_os_json['end_date'].isoformat()
 
     def assert_response(self, response: Response, response_code: int = 200):
         self.assertEqual(response_code, response.status_code, response.content)
@@ -56,9 +51,17 @@ class AuthEnabledApiTestCase(ApiTestCase):
                                 getenv('OS_AUTH_TEST_USER_PASSWORD'),
                                 realm='Username-Password-Authentication',
                                 audience=getenv('OS_AUTH_AUDIENCE'))
+
         AuthEnabledApiTestCase.auth_headers = {'Authorization': f'Bearer {token["access_token"]}'}
 
     def setUp(self):
         super().setUp()
         self.auth_test_client = TestClient(app)
         self.auth_test_client.headers = AuthEnabledApiTestCase.auth_headers
+        self.user_id = 'auth0|6512a35cce390cfd180872fb'
+        self.test_os = PersistentOpenSpaceData('Test Open Space', self.start_date,
+                                               self.start_date + timedelta(days=1), Location(1.0, 2.0),
+                                               self.user_id)
+        self.test_os_json = asdict(self.test_os)
+        self.test_os_json['start_date'] = self.test_os_json['start_date'].isoformat()
+        self.test_os_json['end_date'] = self.test_os_json['end_date'].isoformat()

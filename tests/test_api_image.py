@@ -9,10 +9,10 @@ from httpx import Response
 from api.model.image_data import ImageType, image_type_sizes
 from registry.image import image_registry
 from store.image import image_storage
-from tests import ApiTestCase
+from tests import AuthEnabledApiTestCase
 
 
-class TestImageApi(ApiTestCase):
+class TestImageApi(AuthEnabledApiTestCase):
 
     def setUp(self) -> None:
         super().setUp()
