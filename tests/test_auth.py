@@ -21,6 +21,6 @@ class TestAuthentication(AuthEnabledApiTestCase):
                                                                     'password': getenv('OS_AUTH_TEST_USER_PASSWORD')})
         self.assertEqual(200, response.status_code, response.content)
 
-    def test_not_authenticated_create(self):
+    def test_not_authenticated_os_create(self):
         response = self.test_client.post('/os', json=self.test_os_json)
         self.assert_response(response, 401)
