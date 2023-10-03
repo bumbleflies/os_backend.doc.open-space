@@ -31,7 +31,7 @@ class TestSessionImagesApi(AuthEnabledApiTestCase):
 
     def test_add_os_session_image_to_non_existing_session(self):
         with open(self.fixture_image, 'rb') as image_file:
-            response = self.test_client.post('/os/os-123/s/non-existing/i', files={'image': image_file})
+            response = self.auth_test_client.post('/os/os-123/s/non-existing/i', files={'image': image_file})
 
         self.assert_response(response, 404)
 
@@ -44,6 +44,7 @@ class TestSessionImagesApi(AuthEnabledApiTestCase):
         self.assertDictEqual({
             'identifier': 'i-123',
             'os_identifier': 'os-123',
+            'owner':self.user_id,
             'is_header': True,
             'session_identifier': self.test_id
         }, get_response.json()[0], get_response.json())
@@ -82,6 +83,7 @@ class TestSessionImagesApi(AuthEnabledApiTestCase):
         self.assertDictEqual({
             'identifier': 'i-123',
             'os_identifier': 'os-123',
+            'owner':self.user_id,
             'session_identifier': self.test_id,
             'is_header': True,
         }, response.json()[0], response.json())
@@ -105,6 +107,7 @@ class TestSessionImagesApi(AuthEnabledApiTestCase):
         self.assertDictEqual({
             'identifier': 'i-123',
             'os_identifier': 'os-123',
+            'owner':self.user_id,
             'session_identifier': self.test_id,
             'is_header': True,
         }, response.json()[0], response.json())

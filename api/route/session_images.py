@@ -1,10 +1,12 @@
 
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, UploadFile, Depends
+from fastapi_auth0 import Auth0User
 from starlette import status
 from starlette.responses import FileResponse, Response
 
 from api.model.error import ErrorMessage
 from api.model.image_data import SessionImage, HeaderData, ImageType
+from api.route.auth import auth
 from registry.session import session_registry
 from registry.session_images import session_images_registry
 from store.image import image_storage
@@ -15,10 +17,10 @@ session_images_router = APIRouter(
 )
 
 
-@session_images_router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_session_image(os_identifier: str, session_identifier: str, image: UploadFile, response: Response):
+@session_images_router.post('/', status_code=status.HTTP_201_CREATED, dependencies=[Depends(auth.authcode_scheme)])
+async def add_session_image(os_identifier: str, session_identifier: str, image: UploadFile, user: Auth0User = Depends(auth.get_user), response: Response=None):
     if session_registry.has_session(os_identifier, session_identifier):
-        session_image = SessionImage(session_identifier=session_identifier, os_identifier=os_identifier)
+        session_image = SessionImage(session_identifier=session_identifier, os_identifier=os_identifier, owner=user.id)
         session_images_registry.add_session_image(session_image)
         await image_storage.save(image, session_image)
 

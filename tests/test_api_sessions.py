@@ -97,6 +97,7 @@ class TestSessionApi(AuthEnabledApiTestCase):
                               'title': 'Test Session',
                               'header_images': [{'identifier': upload_response.json()["identifier"],
                                                  'is_header': True,
+                                                 'owner': self.user_id,
                                                  'os_identifier': self.test_session.os_identifier,
                                                  'session_identifier': self.test_session.identifier}]
                               }, get_response.json()[0])
