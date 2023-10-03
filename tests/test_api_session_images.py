@@ -44,7 +44,7 @@ class TestSessionImagesApi(AuthEnabledApiTestCase):
         self.assertDictEqual({
             'identifier': 'i-123',
             'os_identifier': 'os-123',
-            'owner':self.user_id,
+            'owner': self.user_id,
             'is_header': True,
             'session_identifier': self.test_id
         }, get_response.json()[0], get_response.json())
@@ -83,7 +83,7 @@ class TestSessionImagesApi(AuthEnabledApiTestCase):
         self.assertDictEqual({
             'identifier': 'i-123',
             'os_identifier': 'os-123',
-            'owner':self.user_id,
+            'owner': self.user_id,
             'session_identifier': self.test_id,
             'is_header': True,
         }, response.json()[0], response.json())
@@ -107,7 +107,7 @@ class TestSessionImagesApi(AuthEnabledApiTestCase):
         self.assertDictEqual({
             'identifier': 'i-123',
             'os_identifier': 'os-123',
-            'owner':self.user_id,
+            'owner': self.user_id,
             'session_identifier': self.test_id,
             'is_header': True,
         }, response.json()[0], response.json())

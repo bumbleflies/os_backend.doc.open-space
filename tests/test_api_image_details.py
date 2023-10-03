@@ -1,5 +1,5 @@
 from registry.image_details import image_details_registry
-from tests import ApiTestCase, AuthEnabledApiTestCase
+from tests import AuthEnabledApiTestCase
 
 
 class TestImageDetailsApi(AuthEnabledApiTestCase):
@@ -50,11 +50,10 @@ class TestImageDetailsApi(AuthEnabledApiTestCase):
         self.assert_response(delete_response, 204)
 
     def test_details_deleted_when_image_deleted(self):
-
         image_id = self.upload_os_image('os-123')
 
         details_response = self.auth_test_client.put(f'/os/os-123/i/{image_id}/details',
-                                                json={'description': 'test-description'})
+                                                     json={'description': 'test-description'})
         self.assert_response(details_response, 201)
 
         delete_response = self.auth_test_client.delete(f'/os/os-123/i/{image_id}')

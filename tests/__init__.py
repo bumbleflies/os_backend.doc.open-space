@@ -86,6 +86,6 @@ class AuthEnabledApiTestCase(ApiTestCase):
         generatorFactoryInstance.generator_function = lambda: i_identifier
         with open(self.fixture_image, 'rb') as image_file:
             test_client_post = self.auth_test_client.post(f'/os/{os_identifier}/s/{s_identifier}/i',
-                                                     files={'image': image_file})
+                                                          files={'image': image_file})
         self.assert_response(test_client_post, 201)
         return test_client_post
