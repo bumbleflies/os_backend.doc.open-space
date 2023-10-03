@@ -1,5 +1,7 @@
 from datetime import timedelta
 
+from starlette import status
+
 from registry.session import session_registry
 from registry.session_images import session_images_registry
 from tests import AuthEnabledApiTestCase
@@ -65,7 +67,7 @@ class TestSessionApi(AuthEnabledApiTestCase):
             'end_date': (self.start_date + timedelta(hours=4)).isoformat()
         })
 
-        self.assert_response(put_response, 404)
+        self.assert_response(put_response, status.HTTP_403_FORBIDDEN)
 
     def test_delete_session(self):
         session_registry.add_session(self.test_session)
