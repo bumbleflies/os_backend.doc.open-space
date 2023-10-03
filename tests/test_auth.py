@@ -1,5 +1,7 @@
 from os import getenv
 
+from starlette import status
+
 from tests import AuthEnabledApiTestCase
 
 
@@ -23,4 +25,8 @@ class TestAuthentication(AuthEnabledApiTestCase):
 
     def test_not_authenticated_os_create(self):
         response = self.test_client.post('/os', json=self.test_os_json)
-        self.assert_response(response, 401)
+        self.assert_response(response, status.HTTP_401_UNAUTHORIZED)
+
+    def test_not_authenticated_session_create(self):
+        response = self.test_client.post('/os/123/s/', json=self.test_session_json)
+        self.assert_response(response, status.HTTP_401_UNAUTHORIZED)

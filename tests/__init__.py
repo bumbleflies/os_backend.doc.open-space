@@ -10,6 +10,7 @@ from starlette.testclient import TestClient
 
 from api.model.id_gen import generatorFactoryInstance
 from api.model.os_data import Location, PersistentOpenSpaceData
+from api.model.session_data import SessionData
 from api.routes import app
 
 
@@ -65,3 +66,11 @@ class AuthEnabledApiTestCase(ApiTestCase):
         self.test_os_json = asdict(self.test_os)
         self.test_os_json['start_date'] = self.test_os_json['start_date'].isoformat()
         self.test_os_json['end_date'] = self.test_os_json['end_date'].isoformat()
+
+        self.test_id = '345'
+        self.test_session = SessionData(title='Test Session', start_date=self.start_date,
+                                        end_date=self.start_date + timedelta(hours=1), os_identifier=self.test_id,
+                                        owner=self.user_id)
+        self.test_session_json = asdict(self.test_session)
+        self.test_session_json['start_date'] = self.test_session_json['start_date'].isoformat()
+        self.test_session_json['end_date'] = self.test_session_json['end_date'].isoformat()

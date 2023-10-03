@@ -15,7 +15,7 @@ session_router = APIRouter(
 )
 
 
-@session_router.post('/', status_code=status.HTTP_201_CREATED)
+@session_router.post('/', status_code=status.HTTP_201_CREATED, dependencies=[Depends(auth.authcode_scheme)])
 async def add_session(os_identifier: str, session: TransientSessionData,
                       user: Auth0User = Depends(auth.get_user)) -> SessionData:
     persistent_session = SessionData.from_transient(os_identifier, session, user.id)
@@ -39,7 +39,7 @@ async def get_sessions(os_identifier: str, with_header_images: bool = False) \
     return all_sessions
 
 
-@session_router.put('/{session_identifier}')
+@session_router.put('/{session_identifier}', dependencies=[Depends(auth.authcode_scheme)])
 async def update_session(os_identifier: str, session_identifier: str, session: TransientSessionData,
                          response: Response) -> SessionData | ErrorMessage:
     if session_registry.has_session(os_identifier, session_identifier):
@@ -58,6 +58,7 @@ async def get_session(os_identifier: str, session_identifier: str, response: Res
         return ErrorMessage('Invalid OpenSpace Identifier')
 
 
-@session_router.delete('/{session_identifier}', status_code=status.HTTP_204_NO_CONTENT)
+@session_router.delete('/{session_identifier}', status_code=status.HTTP_204_NO_CONTENT,
+                       dependencies=[Depends(auth.authcode_scheme)])
 async def delete_session(os_identifier: str, session=Permission('delete', get_session)) -> None:
     return session_registry.delete_by_identifier(session.identifier)
