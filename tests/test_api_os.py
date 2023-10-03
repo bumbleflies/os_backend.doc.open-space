@@ -104,6 +104,7 @@ class TestOsApi(AuthEnabledApiTestCase):
             'start_date': self.start_date.isoformat(),
             'header_images': [{'identifier': image_id,
                                'is_header': True,
+                               'owner': self.user_id,
                                'os_identifier': self.test_os.identifier}]
         }, os_response.json())
 

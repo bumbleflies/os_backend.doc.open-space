@@ -22,7 +22,7 @@ class TestImageApi(AuthEnabledApiTestCase):
 
     def test_create_os_image(self):
         with open(self.fixture_image, 'rb') as image_file:
-            response = self.test_client.post(f'/os/{self.test_id}/i/', files={'image': image_file})
+            response = self.auth_test_client.post(f'/os/{self.test_id}/i/', files={'image': image_file})
 
         self.assert_response(response, 201)
         self.assertEqual(self.test_id, response.json()['os_identifier'], response.json())
@@ -39,13 +39,14 @@ class TestImageApi(AuthEnabledApiTestCase):
         self.assertEqual(1, len(response.json()), response.json())
         self.assertDictEqual({
             'identifier': image_id,
+            'owner': self.user_id,
             'os_identifier': self.test_id,
             'is_header': True,
         }, response.json()[0], response.json())
 
     def test_delete_os_image(self):
         image_id = self.upload_os_image(self.test_id)
-        response = self.test_client.delete(f'/os/{self.test_id}/i/{image_id}')
+        response = self.auth_test_client.delete(f'/os/{self.test_id}/i/{image_id}')
         self.assert_response(response, 204)
 
     def test_make_header(self):
@@ -56,6 +57,7 @@ class TestImageApi(AuthEnabledApiTestCase):
         self.assert_response(response, 200)
         self.assertDictEqual({
             'identifier': image_id,
+            'owner': self.user_id,
             'os_identifier': self.test_id,
             'is_header': True,
         }, response.json()[0], response.json())
@@ -68,6 +70,7 @@ class TestImageApi(AuthEnabledApiTestCase):
         self.assert_response(response, 200)
         self.assertDictEqual({
             'identifier': image_id,
+            'owner': self.user_id,
             'os_identifier': self.test_id,
             'is_header': True,
         }, response.json()[0], response.json())
@@ -91,14 +94,15 @@ class TestImageApi(AuthEnabledApiTestCase):
         self.assertEqual(1, len(response.json()), response.json())
         self.assertDictEqual({
             'identifier': image_id,
+            'owner': self.user_id,
             'os_identifier': self.test_os.identifier,
             'is_header': True,
         }, response.json()[0], response.json())
 
     def test_image_dir_is_deleted_when_empty(self):
         with open(self.fixture_image, 'rb') as image_file:
-            response1 = self.test_client.post(f'/os/{self.test_id}/i/', files={'image': image_file})
-            response2 = self.test_client.post(f'/os/{self.test_id}/i/', files={'image': image_file})
+            response1 = self.auth_test_client.post(f'/os/{self.test_id}/i/', files={'image': image_file})
+            response2 = self.auth_test_client.post(f'/os/{self.test_id}/i/', files={'image': image_file})
             self.assert_response(response1, 201)
             self.assert_response(response2, 201)
 
@@ -106,9 +110,9 @@ class TestImageApi(AuthEnabledApiTestCase):
         self.assert_response(response, 200)
         self.assertEqual(2, len(response.json()), response.json())
         self.assertEqual(6, len(listdir(Path('img').joinpath(self.test_id))))
-        response_del1 = self.test_client.delete(f'/os/{self.test_id}/i/{response1.json()["identifier"]}')
+        response_del1 = self.auth_test_client.delete(f'/os/{self.test_id}/i/{response1.json()["identifier"]}')
         self.assert_response(response_del1, 204)
-        response_del2 = self.test_client.delete(f'/os/{self.test_id}/i/{response2.json()["identifier"]}')
+        response_del2 = self.auth_test_client.delete(f'/os/{self.test_id}/i/{response2.json()["identifier"]}')
         self.assert_response(response_del2, 204)
         self.assertFalse(Path('img').joinpath(self.test_id).exists())
 

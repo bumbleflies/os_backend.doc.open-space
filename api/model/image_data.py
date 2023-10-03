@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from enum import Enum
 
+from fastapi_permissions import Allow, Everyone
+
 from api.model.id_gen import generatorFactoryInstance
 
 
@@ -8,6 +10,7 @@ from api.model.id_gen import generatorFactoryInstance
 class PersistentImage:
     os_identifier: str
     identifier: str = field(default_factory=generatorFactoryInstance.instanciator)
+    owner: str = field(default=None)
     is_header: bool = False
 
     @property
@@ -21,6 +24,13 @@ class PersistentImage:
     @property
     def full_name(self) -> str:
         return str(self.identifier)
+
+    def __acl__(self):
+        return [
+            (Allow, Everyone, "view"),
+            (Allow, f'user:{self.owner}', "update"),
+            (Allow, f'user:{self.owner}', "delete"),
+        ]
 
 
 @dataclass(kw_only=True)

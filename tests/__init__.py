@@ -74,3 +74,9 @@ class AuthEnabledApiTestCase(ApiTestCase):
         self.test_session_json = asdict(self.test_session)
         self.test_session_json['start_date'] = self.test_session_json['start_date'].isoformat()
         self.test_session_json['end_date'] = self.test_session_json['end_date'].isoformat()
+
+    def upload_os_image(self, os_identifier) -> str:
+        with open(self.fixture_image, 'rb') as image_file:
+            test_client_post = self.auth_test_client.post(f'/os/{os_identifier}/i/', files={'image': image_file})
+        self.assert_response(test_client_post, 201)
+        return test_client_post.json()['identifier']
